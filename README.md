@@ -252,6 +252,7 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 ### Models
 - Cart Model
 ```yaml
+updatedAt: {timestamp},
 {
   userId: {ObjectId, refs to User, mandatory, unique},
   items: [{
@@ -261,8 +262,8 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
   totalPrice: {number, mandatory, comment: "Holds total price of all the items in the cart"},
   totalItems: {number, mandatory, comment: "Holds total number of items in the cart"},
   createdAt: {timestamp},
-  updatedAt: {timestamp},
 }
+  
 ```
 
 
