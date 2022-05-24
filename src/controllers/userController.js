@@ -1,8 +1,8 @@
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 const { isValidObjectId } = require("mongoose")
 const { findById } = require("../models/cartModel")
 const userModel = require("../models/userModel")
-  
+
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 
@@ -125,34 +125,36 @@ const userLogin = async function (req, res) {
 }
 
 
-const getUserDetails = async function(req,res){
-   try {
 
-    const userIdfromParams = req.params.userId
-    const userIdFromToken = req.userId
+//3.
+const getUserDetails = async function (req, res) {
+    try {
 
-    if(isValidObjectId(userIdfromParams)){
-        return res.status(400).send({status:false, message:"Valid UserId is Required"});
-    }
-    const checkId = await userModel.findOne({ _id: userIdfromParams }).lean() 
-    if (!checkId) {
-        return res.status(404).send({status:false, message:"User Not Found"});
-    }
+        const userIdfromParams = req.params.userId
+        const userIdFromToken = req.userId
+
+        if (isValidObjectId(userIdfromParams)) {
+            return res.status(400).send({ status: false, message: "Valid UserId is Required" });
+        }
+        const checkId = await userModel.findOne({ _id: userIdfromParams }).lean()
+        if (!checkId) {
+            return res.status(404).send({ status: false, message: "User Not Found" });
+        }
 
 
 
-    if (userIdFromToken != userIdfromParams){
-        return res.status(403).send({status: false, message:"Unauthorized access"});
-    };
+        if (userIdFromToken != userIdfromParams) {
+            return res.status(403).send({ status: false, message: "Unauthorized access" });
+        };
 
         return res.status(200).send({ status: true, message: "User details", data: checkId });
 
 
 
 
-   } catch (error) {
-    return res.status(500).send({ status: false, message: error.message })
-   }
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
 }
 
 
@@ -220,5 +222,5 @@ const updateUserProfile = async function (req, res) {
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
 };
 
-module.exports = { registerUser, userLogin, updateUserProfile }
+module.exports = { registerUser, userLogin, updateUserProfile, getUserDetails }
 
