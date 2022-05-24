@@ -59,7 +59,7 @@ const registerUser = async function (req, res) {
             if (!isValid(data.phone))
                 error.push("phone number is required")
             //checks for valid phone number
-            if (data.phone?.trim() && !data.phone.trim().match(/^(\+\d{1,3}[- ]?)?\d{10}$/))
+            if (data.phone?.trim() && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
                 error.push("enter valid mobile number")
             //check unique phone number
             if (getPhone)
