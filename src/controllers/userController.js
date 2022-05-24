@@ -1,10 +1,8 @@
 const jwt = require("jsonwebtoken")
 const { isValidObjectId } = require("mongoose")
-const { findById } = require("../models/cartModel")
 const userModel = require("../models/userModel")
+const { uploadFile } = require("../awsS3/aws")
 
-const userModel = require("../models/userModel")
-const jwt = require("jsonwebtoken")
 
 //check Validity
 const isValid = (value) => {

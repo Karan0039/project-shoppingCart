@@ -8,4 +8,4 @@ route.get("/user/:userId/profile", getUserDetails)
 route.put("/user/:userId/profile", updateUserProfile)
 
 
-module.exports = route;
+module.exports = route; 
