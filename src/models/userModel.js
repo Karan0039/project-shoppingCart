@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 // INSTANTIATE A MONGOOSE SCHEMA----
 
-const userModel = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   fname: {type:String, required:true,trim:true},
   lname: {type:String, required:true,trim:true},
   email: {type:String, required:true,  unique:true,trim:true},
@@ -21,9 +21,7 @@ const userModel = new mongoose.Schema({
       city: {type:String, required:true,trim:true},
       pincode: {type:Number, required:true,trim:true}
     }
-  },
-  createdAt: {timestamp},
-  updatedAt: {timestamp}
+  }
 },  { timestamps: true })
  
-module.exports = mongoose.model('user', userModel)
+module.exports = mongoose.model('user', userSchema)
