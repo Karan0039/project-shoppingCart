@@ -1,4 +1,7 @@
 const jwt=require("jsonwebtoken")
+const { isValidObjectId } = require("mongoose")
+const { findById } = require("../models/cartModel")
+const userModel = require("../models/userModel")
   
 
     const userLogin=async function(req,res){
@@ -29,4 +32,37 @@ const jwt=require("jsonwebtoken")
     res.status(200).send({ status: true, data: "logged in successfully",data:token })
 }
 
+
+const getUserDetails = async function(req,res){
+   try {
+
+    const userIdfromParams = req.params.userId
+    const userIdFromToken = req.userId
+
+    if(isValidObjectId(userIdfromParams)){
+        return res.status(400).send({status:false, message:"Valid UserId is Required"});
+    }
+    const checkId = await userModel.findOne({ _id: userIdfromParams }).lean() 
+    if (!checkId) {
+        return res.status(404).send({status:false, message:"User Not Found"});
+    }
+
+
+
+    if (userIdFromToken != userIdfromParams){
+        return res.status(403).send({status: false, message:"Unauthorized access"});
+    };
+
+        return res.status(200).send({ status: true, message: "User details", data: checkId });
+
+
+
+
+   } catch (error) {
+    return res.status(500).send({ status: false, message: error.message })
+   }
+}
+
 module.exports.userLogin=userLogin
+module.exports.getUserDetails=getUserDetails
+
