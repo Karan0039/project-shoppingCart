@@ -71,16 +71,16 @@ const userLogin = async function (req, res) {
         if (!user) {
             return res.status(400).send({ status: false, msg: "email not found" })
         }
-        bcrypt.compare(password, user.password, function (err, result) {
-            if (result == true) {
-                const token = jwt.sign({
-                    userId: user._id
-                }, "Project 3", { expiresIn: "30m" });
-                res.status(200).send({ status: true, data: "logged in successfully", data: token })
-            }
-            else if (result == false)
-                return res.status(400).send({ status: false, msg: "Incorrect Password" })
-        });
+        let result = await bcrypt.compare(password, user.password)
+        if (result == true) {
+            const token = jwt.sign({
+                userId: user._id
+            }, "Project 5", { expiresIn: "30m" });
+            res.status(200).send({ status: true, data: "logged in successfully", data: token })
+        }
+        else if (result == false)
+            return res.status(400).send({ status: false, msg: "Incorrect Password" })
+
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
@@ -131,7 +131,7 @@ const updateUserProfile = async function (req, res) {
     let initialCapital = function (value) {
         return value[0].toUpperCase() + value.slice(1).toLowerCase()
     }
-    
+
     if (data.fname?.trim())
         data.fname = initialCapital(data.fname)
 
@@ -153,8 +153,8 @@ const updateUserProfile = async function (req, res) {
         data.email = data.email.toLowerCase()
 
     let updatedProfile = await userModel.findByIdAndUpdate(userId, [{ $addFields: data }], { new: true });
-    if(data.password)
-    updatedProfile = await userModel.findByIdAndUpdate(userId, { $set:{password: data.password }}, { new: true });
+    if (data.password)
+        updatedProfile = await userModel.findByIdAndUpdate(userId, { $set: { password: data.password } }, { new: true });
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
 };
 
