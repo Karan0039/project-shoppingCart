@@ -3,7 +3,7 @@ const { isValidObjectId } = require("mongoose")
 const userModel = require("../models/userModel")
 const { uploadFile } = require("../awsS3/aws")
 const bcrypt = require("bcrypt")
-const { isRequired, isInvalid, isValid } = require("./badRequest")
+const { isRequired, isInvalid, isValid } = require("../Validations/userValidation")
 
 
 //1.
