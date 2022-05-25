@@ -1,18 +1,21 @@
 const productModel = require("../models/productModel")
+const { uploadFile } = require("../awsS3/aws")
+const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
 
 //1.
-const createProduct = function (req, res) {
+const createProduct = async function (req, res) {
     try {
         let data = req.body
         let files = req.files
+        let getTitle = await productModel.findOne({ title: data.title })
 
         let error = []
         if (isRequired(data, files)) {
             let err = isRequired(data, files);
             error.push(...err)
         }
-        if (isInvalid(data, getEmail, getPhone)) {
-            let err = isInvalid(data, getEmail, getPhone);
+        if (isInvalid(data, getTitle)) {
+            let err = isInvalid(data, getTitle);
             error.push(...err)
         }
         if (error.length > 0)
@@ -21,55 +24,59 @@ const createProduct = function (req, res) {
         let uploadedFileURL = await uploadFile(files[0])
         data.productImage = uploadedFileURL
 
+        data.price = parseFloat(parseFloat(data.price).toFixed(2))
+
+
+
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
 
 
 //2.
-const getProducts = function (req, res) {
+const getProducts = async function (req, res) {
     try {
         //write code here
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
 
 //3.
-const getProductById = function (req, res) {
+const getProductById = async function (req, res) {
     try {
         //write code here
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
 
 //4.
-const updateProduct = function (req, res) {
+const updateProduct = async function (req, res) {
     try {
         //write code here
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
 
 //5.
-const deleteProduct = function (req, res) {
+const deleteProduct = async function (req, res) {
     try {
         const productId = req.body.productId
         if (!isValidObjectId(productId)) {
@@ -93,7 +100,7 @@ const deleteProduct = function (req, res) {
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 module.exports = { createProduct, getProducts, getProductById, updateProduct, deleteProduct }

@@ -17,11 +17,13 @@ const productSchema = new mongoose.Schema({
     currencyId: {
         type: String,
         required: true,
+        default:"INR"
         //INR 
     },
     currencyFormat: {
         type: String,
-        required: true
+        required: true,
+        default:"₹"
         //Rupee symbol
     },
     isFreeShipping: {
@@ -37,8 +39,8 @@ const productSchema = new mongoose.Schema({
         type: String
     },
     availableSizes: [{
-        type: String,
-        enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        type: String
+        //enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
     }],
     installments: {
         type: Number
