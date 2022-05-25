@@ -12,7 +12,7 @@ const isValidNum = (value) => {
 }
 
 function isRequired(data, files) {
-    try {
+     try {
         let error = []
 
         //checks if user has given any data
@@ -39,7 +39,7 @@ function isRequired(data, files) {
             return error;
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        console.log({ status: false, message: err.message })
     }
 }
 
@@ -53,36 +53,44 @@ function isInvalid(data, getTitle) {
             error.push("title is already in use")
 
         //checks for valid price
-        if (data.price?.trim() && !(/^([0-9]+)?.?([0-9]{2})+$/.test(data.price)))
-            error.push("price must be in 9xxx.99 formatt")
+        if (data.price?.trim() && !(/^([0-9]+)?.?([0-9])+$/.test(data.price)))
+            error.push("enter valid price")
 
-            //checks for valid currencyId
-        if (data.currencyId?.trim() && typeof data.currencyId !== "string")
-        error.push("enter a valid currencyId")
+        // //checks for valid currencyId
+        // if (data.currencyId?.trim() && typeof data.currencyId !== "string")
+        //     error.push("enter a valid currencyId")
 
-        //checks for valid currencyFormat
-        if (data.currencyFormat?.trim() && typeof data.currencyFormat !== "string")
-        error.push("enter a valid currencyFormat")
+        // //checks for valid currencyFormat
+        // if (data.currencyFormat?.trim() && typeof data.currencyFormat !== "string")
+        //     error.push("enter a valid currencyFormat")
 
         //checks for valid isFreeShipping
-        if (data.isFreeShipping?.trim() && typeof data.isFreeShipping !== "boolean")
-            error.push("enter a valid isFreeShipping entry")
+        // if (data.isFreeShipping?.trim() && typeof data.isFreeShipping !== "boolean")
+        //     error.push("enter a valid isFreeShipping entry")
 
         //checks for valid availableSizes
-        let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
-        if (data.availableSizes?.trim() && !arr.includes(data.availableSizes.toUpperCase()))
-            error.push("enter a valid first name")
+        //let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        if (data.availableSizes) {
+            data.availableSizes = JSON.parse(data.availableSizes);
+            // for (let i in data.availableSizes) {
+            //     if (!arr.includes(data.availableSizes[i])) {
+            //         console.log(data.availableSizes[i])
+            //         error.push("enter a valid availableSizes")
+            //         break;
+            //     }
+            //} 
+        }
 
-        //checks for valid installments
-        if (data.installments?.trim() && typeof data.installments !== "number")
-            error.push("enter a valid installments")
+        // //checks for valid installments
+        // if (data.installments?.trim() && typeof data.installments !== "number")
+        //     error.push("enter a valid installments")
 
         if (error.length > 0)
             return error;
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        console.log({ status: false, message: err.message })
     }
 }
 

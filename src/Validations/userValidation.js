@@ -75,7 +75,7 @@ function isRequired(data, files) {
             return error;
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        console.log({ status: false, message: err.message })
     }
 }
 
@@ -141,7 +141,7 @@ function isInvalid(data, getEmail, getPhone) {
             return error;
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        console.log({ status: false, message: err.message })
     }
 }
 

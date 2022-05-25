@@ -7,7 +7,7 @@ const createProduct = async function (req, res) {
     try {
         let data = req.body
         let files = req.files
-        let getTitle = await userModel.findOne({ title: data.title })
+        let getTitle = await productModel.findOne({ title: data.title })
 
         let error = []
         if (isRequired(data, files)) {
@@ -15,7 +15,7 @@ const createProduct = async function (req, res) {
             error.push(...err)
         }
         if (isInvalid(data, getTitle)) {
-            let err = isInvalid(data, getEmail, getPhone);
+            let err = isInvalid(data, getTitle);
             error.push(...err)
         }
         if (error.length > 0)
@@ -23,14 +23,17 @@ const createProduct = async function (req, res) {
 
         let uploadedFileURL = await uploadFile(files[0])
         data.productImage = uploadedFileURL
-        data.availableSizes = availableSizes.toUpperCase();
+
+        data.price = parseFloat(parseFloat(data.price).toFixed(2))
+
+
 
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -43,7 +46,7 @@ const getProducts = async function (req, res) {
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -55,7 +58,7 @@ const getProductById = async function (req, res) {
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -67,7 +70,7 @@ const updateProduct = async function (req, res) {
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -79,7 +82,7 @@ const deleteProduct = async function (req, res) {
 
     }
     catch (err) {
-        res.status(500).send({ status: false, message: error.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 module.exports = { createProduct, getProducts, getProductById, updateProduct, deleteProduct }
