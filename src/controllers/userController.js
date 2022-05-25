@@ -261,7 +261,7 @@ const updateUserProfile = async function (req, res) {
 
     }
 
-    const updatedProfile = await userModel.findByIdAndUpdate(userId, updatedDetails, { new: true });
+    const updatedProfile = await userModel.findByIdAndUpdate(userId, [{ $addFields: updatedDetails }], { new: true });
     if (updatedProfile == null)
         return res.status(404).send({ status: false, message: "User not found." });
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
