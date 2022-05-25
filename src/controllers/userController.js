@@ -258,9 +258,9 @@ const updateUserProfile = async function (req, res) {
 
         if (isValid(address.billing.pincode))
             updatedDetails.address.billing.pincode = address.billing.pincode;
-
     }
 
+    
     const updatedProfile = await userModel.findByIdAndUpdate(userId, updatedDetails, { new: true });
     if (updatedProfile == null)
         return res.status(404).send({ status: false, message: "User not found." });
