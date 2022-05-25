@@ -71,7 +71,25 @@ const updateProduct = function (req, res) {
 //5.
 const deleteProduct = function (req, res) {
     try {
-        //write code here
+        const productId = req.body.productId
+        if (!isValidObjectId(productId)) {
+            return res.status(400).send({ status: false, msg: "productId is invalid" });
+        }
+        
+        const findProduct = await productModel.findById(productId);
+
+        if (!findProduct) {
+            return res.status(404).send({ status: false, message: 'product does not exists' })
+        }
+        if (findProduct.isDeleted == true){
+            return res.status(400).send({status:false, message:"product already deleted."})
+        }
+
+        const deletedDetails = await productModel.findOneAndUpdate(
+            { _id: productId },
+            { $set: { isDeleted: true, deletedAt: new Date() } }, {new:true})
+
+        return res.status(200).send({ status: true, message: 'Product deleted successfully.', data:deletedDetails })
 
     }
     catch (err) {
