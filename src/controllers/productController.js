@@ -25,11 +25,8 @@ const createProduct = async function (req, res) {
 
         data.price = parseFloat(parseFloat(data.price).toFixed(2))
 
-
-
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
-
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
