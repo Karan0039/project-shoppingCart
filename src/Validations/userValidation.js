@@ -10,7 +10,7 @@ function isRequired(data, files) {
         let error = []
         //checks if user has given any data
         if (Object.keys(data).length == 0)
-            return "Please enter data to user registration"
+            return ["Please enter data to user registration"]
 
         //checks if fname is present
         if (!isValid(data.fname))
@@ -26,7 +26,7 @@ function isRequired(data, files) {
 
         //check if image file is present
         if (!files || files.length == 0)
-            error.push("no file found")
+            error.push("image file is required")
 
         //checks if phone is present or not
         if (!isValid(data.phone))
@@ -36,9 +36,14 @@ function isRequired(data, files) {
         if (!isValid(data.password))
             error.push("password is required")
 
-        let address = data.address
+
         //street is present 
-        if (isValid(address)) {
+        if (isValid(data.address)) {
+
+            if (typeof data.address == "string")
+                data.address = JSON.parse(data.address)
+
+            let address = data.address
 
             if (isValid(address.shipping)) {
                 if (!isValid(address.shipping.street))
@@ -99,6 +104,10 @@ function isInvalid(data, getEmail, getPhone) {
         if (getEmail)
             error.push("email is already in use")
 
+        //check for image file
+        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+            error.push("upload a valid image file")
+
         //checks for valid phone number
         if (data.phone?.trim() && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
             error.push("enter valid mobile number")
@@ -114,9 +123,8 @@ function isInvalid(data, getEmail, getPhone) {
 
         let address = data.address
         if (isValid(address)) {
+
             if (address.shipping) {
-                if (address.shipping.street?.trim() && !(/^[a-zA-Z0-9]+$/.test(address.shipping.street)))
-                    error.push("enter a valid shipping/street")
 
                 if (address.shipping.city?.trim() && !(/^[a-zA-Z]+$/.test(address.shipping.city)))
                     error.push("enter a valid shipping/city name")
@@ -126,8 +134,6 @@ function isInvalid(data, getEmail, getPhone) {
             }
 
             if (address.billing) {
-                if (address.billing.street?.trim() && !(/^[a-zA-Z0-9]+$/.test(address.billing.street)))
-                    error.push("enter a valid billing/street")
 
                 if (address.billing.city?.trim() && !(/^[a-zA-Z]+$/.test(address.billing.city)))
                     error.push("enter a valid billing/city name")
