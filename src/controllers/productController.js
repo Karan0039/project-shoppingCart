@@ -1,12 +1,7 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
 const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
-<<<<<<< HEAD
 const mongoose=require("mongoose")
-=======
-const { send } = require("express/lib/response")
-
->>>>>>> 0ace5b20a275c8be771c803ed29482bbd404fe7e
 //1.
 const createProduct = async function (req, res) {
     try {
