@@ -1,6 +1,7 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
 const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
+const { send } = require("express/lib/response")
 
 //1.
 const createProduct = async function (req, res) {
@@ -62,9 +63,25 @@ const getProductById = async function (req, res) {
 //4.
 const updateProduct = async function (req, res) {
     try {
+        let productId = req.params.productId
         let data = req.body;
-        let files = req.files;
+        let file = req.files;
+        let err = isInvalid(data, file);
+        if (err) {
+            error.push(...err)
+        }
+        if (error.length > 0)
+            return res.status(400).send({ status: false, message: error })
 
+        if (file.length > 0) {
+            let uploadedFileURL = await uploadFile(file[0])
+            data.prductImage = uploadedFileURL
+        }
+        let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true });
+        if (!updatedProduct)
+            return res.status(404).send({ status: false, message: "Product not found." })
+
+        return res.status(200).send({ status: true, message: "Product details updated successfully.", data: updatedProduct })
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })

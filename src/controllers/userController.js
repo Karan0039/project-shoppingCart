@@ -118,9 +118,8 @@ const updateUserProfile = async function (req, res) {
     let getEmail = await userModel.findOne({ email: data.email })
     let getPhone = await userModel.findOne({ phone: data.phone })
     let error = []
-
+    let err = isInvalid(data, getEmail, getPhone, file);
     if (isInvalid(data, getEmail, getPhone)) {
-        let err = isInvalid(data, getEmail, getPhone);
         error.push(...err)
     }
     if (error.length > 0)
