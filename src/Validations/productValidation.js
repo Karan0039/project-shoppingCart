@@ -12,12 +12,12 @@ const isValidNum = (value) => {
 }
 
 function isRequired(data, files) {
-     try {
+    try {
         let error = []
 
         //checks if user has given any data
         if (Object.keys(data).length == 0)
-            return "Please enter data to user registration"
+            return ["Please enter data to user registration"]
 
         //checks if title is present
         if (!isValid(data.title))
@@ -33,7 +33,7 @@ function isRequired(data, files) {
 
         //check if image file is present
         if (!files || files.length == 0)
-            error.push("no file found")
+            error.push("image file is required")
 
         if (error.length > 0)
             return error;
@@ -44,7 +44,7 @@ function isRequired(data, files) {
 }
 
 
-function isInvalid(data, getTitle) {
+function isInvalid(data, getTitle, files) {
     try {
         let error = []
 
@@ -64,26 +64,35 @@ function isInvalid(data, getTitle) {
         // if (data.currencyFormat?.trim() && typeof data.currencyFormat !== "string")
         //     error.push("enter a valid currencyFormat")
 
-        //checks for valid isFreeShipping
-        // if (data.isFreeShipping?.trim() && typeof data.isFreeShipping !== "boolean")
-        //     error.push("enter a valid isFreeShipping entry")
-
-        //checks for valid availableSizes
-        //let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
-        if (data.availableSizes) {
-            data.availableSizes = JSON.parse(data.availableSizes);
-            // for (let i in data.availableSizes) {
-            //     if (!arr.includes(data.availableSizes[i])) {
-            //         console.log(data.availableSizes[i])
-            //         error.push("enter a valid availableSizes")
-            //         break;
-            //     }
-            //} 
+        // checks for valid isFreeShipping
+        if (data.isFreeShipping?.trim()) {
+            data.isFreeShipping = data.isFreeShipping.toLowerCase()
+            let arr = ["true", "false"]
+            if (!arr.includes(data.isFreeShipping))
+                error.push("enter a valid isFreeShipping entry")
         }
 
-        // //checks for valid installments
-        // if (data.installments?.trim() && typeof data.installments !== "number")
-        //     error.push("enter a valid installments")
+        //check for image file
+        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+            error.push("upload a valid image file")
+
+        //checks for valid availableSizes
+        let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        if (data.availableSizes) {
+            //console.log(data.availableSizes)
+            let arr1 = (data.availableSizes).split(",")
+            data.availableSizes = arr1.map(x => x.toUpperCase());
+            for (let i in data.availableSizes) {
+                if (!arr.includes(data.availableSizes[i])) {
+                    error.push("enter valid availableSizes")
+                    break;
+                }
+            }
+        }
+
+        //checks for valid installments
+        if (data.installments?.trim() && !(/^[0-9]+$/.test(data.installments.trim())))
+            error.push("enter a valid installments")
 
         if (error.length > 0)
             return error;

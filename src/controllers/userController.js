@@ -19,7 +19,7 @@ const registerUser = async function (req, res) {
             let err = isRequired(data, files);
             error.push(...err)
         }
-        if (isInvalid(data, getEmail, getPhone)) {
+        if (isInvalid(data, getEmail, getPhone, files)) {
             let err = isInvalid(data, getEmail, getPhone);
             error.push(...err)
         }
@@ -149,14 +149,14 @@ const updateUserProfile = async function (req, res) {
     }
     if (data.email?.trim())
         data.email = data.email.toLowerCase()
-    if(file.length>0){
+    if (file.length > 0) {
         let uploadedFileURL = await uploadFile(file[0])
         data.profileImage = uploadedFileURL
     }
-    
+
     let updatedProfile = await userModel.findByIdAndUpdate(userId, [{ $addFields: data }], { new: true });
 
-    if (data.password?.trim()){
+    if (data.password?.trim()) {
         data.password = await bcrypt.hash(data.password, 10)
         updatedProfile = await userModel.findByIdAndUpdate(userId, { $set: { password: data.password } }, { new: true })
     }
