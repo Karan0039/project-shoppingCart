@@ -66,8 +66,7 @@ const getProductById = async (req, res) => {
         if (!product) {
             return res.status(404).send({ status: false, message: "No Products Available!!" })
         }
-
-        return res.status(200).send({ status: true, count: product.length, message: 'Success', data: product });
+        return res.status(200).send({ status: true, count: product.length, message: 'Success', data: product })
     }
     catch (error) {
         res.status(500).send({ Error: error.message })
