@@ -66,6 +66,7 @@ const updateProduct = async function (req, res) {
         let productId = req.params.productId
         let data = req.body;
         let file = req.files;
+        let error=[]
         let err = isInvalid(data, file);
         if (err) {
             error.push(...err)
