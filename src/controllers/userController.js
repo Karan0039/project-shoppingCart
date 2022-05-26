@@ -114,6 +114,7 @@ const getUserDetails = async function (req, res) {
 const updateUserProfile = async function (req, res) {
     let userId = req.params.userId;
     let data = req.body
+    let file = req.files
     let getEmail = await userModel.findOne({ email: data.email })
     let getPhone = await userModel.findOne({ phone: data.phone })
     let error = []
@@ -125,13 +126,10 @@ const updateUserProfile = async function (req, res) {
     if (error.length > 0)
         return res.status(400).send({ status: false, message: error })
 
-    if (data.password?.trim())
-        data.password = await bcrypt.hash(data.password, 10)
     //changing data to proper format
     let initialCapital = function (value) {
         return value[0].toUpperCase() + value.slice(1).toLowerCase()
     }
-
     if (data.fname?.trim())
         data.fname = initialCapital(data.fname)
 
@@ -151,10 +149,17 @@ const updateUserProfile = async function (req, res) {
     }
     if (data.email?.trim())
         data.email = data.email.toLowerCase()
-
+    if(file.length>0){
+        let uploadedFileURL = await uploadFile(file[0])
+        data.profileImage = uploadedFileURL
+    }
+    
     let updatedProfile = await userModel.findByIdAndUpdate(userId, [{ $addFields: data }], { new: true });
-    if (data.password)
-        updatedProfile = await userModel.findByIdAndUpdate(userId, { $set: { password: data.password } }, { new: true });
+
+    if (data.password?.trim()){
+        data.password = await bcrypt.hash(data.password, 10)
+        updatedProfile = await userModel.findByIdAndUpdate(userId, { $set: { password: data.password } }, { new: true })
+    }
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
 };
 
