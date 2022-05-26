@@ -1,8 +1,12 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
 const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
+<<<<<<< HEAD
+const mongoose=require("mongoose")
+=======
 const { send } = require("express/lib/response")
 
+>>>>>>> 0ace5b20a275c8be771c803ed29482bbd404fe7e
 //1.
 const createProduct = async function (req, res) {
     try {
@@ -36,28 +40,46 @@ const createProduct = async function (req, res) {
 
 
 
-//2.
-const getProducts = async function (req, res) {
+//======================================================get Products from Query params===================================================================//
+
+const getProducts = async (req, res) => {
     try {
-        //write code here
+        
 
     }
-    catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+    catch (error) {
+        return res.status(500).send({ status: false, error: error.message })
+
     }
 }
 
 
-//3.
-const getProductById = async function (req, res) {
-    try {
-        //write code here
 
+//======================================================Get products by path params===================================================================//
+
+const getProductById = async (req, res) => {
+
+    try {
+        const data = req.params.productId
+
+        if (!mongoose.Types.ObjectId.isValid(data)) {
+            return res.status(400).send({ status: false, message: "Invaild Product Id" })
+        }
+        //find the productId which is deleted key is false--
+        let product = await productModel.findOne({ _id: data, isDeleted: false })
+
+        if (!product) {
+            return res.status(404).send({ status: false, message: "No Products Available!!" })
+        }
+
+        return res.status(200).send({ status: true, count: product.length, message: 'Success', data: product });
     }
-    catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+    catch (error) {
+        res.status(500).send({ Error: error.message })
     }
 }
+
+
 
 
 //4.
