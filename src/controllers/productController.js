@@ -40,11 +40,6 @@ const createProduct = async function (req, res) {
 
 const getProducts = async (req, res) => {
     try {
-<<<<<<< HEAD
-        let reqParams = req.query
-=======
-
->>>>>>> 0e3af750611d632dde0a3e41bfee98e6017c413a
 
     let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
 
