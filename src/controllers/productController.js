@@ -1,12 +1,7 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
 const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
-<<<<<<< HEAD
-const mongoose=require("mongoose")
-=======
-const { send } = require("express/lib/response")
-
->>>>>>> 0ace5b20a275c8be771c803ed29482bbd404fe7e
+const mongoose = require("mongoose")
 //1.
 const createProduct = async function (req, res) {
     try {
@@ -30,11 +25,8 @@ const createProduct = async function (req, res) {
 
         data.price = parseFloat(parseFloat(data.price).toFixed(2))
 
-
-
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
-
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -47,7 +39,11 @@ const createProduct = async function (req, res) {
 
 const getProducts = async (req, res) => {
     try {
+<<<<<<< HEAD
         let reqParams = req.query
+=======
+
+>>>>>>> 0e3af750611d632dde0a3e41bfee98e6017c413a
 
     let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
 
@@ -130,9 +126,13 @@ const getProductById = async (req, res) => {
 const updateProduct = async function (req, res) {
     try {
         let productId = req.params.productId
-        let data = req.body;
-        let file = req.files;
-        let err = isInvalid(data, file);
+        let data = req.body
+        let file = req.files
+        let error = []
+        if (!mongoose.isValidObjectId(productId))
+            return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
+
+        let err = isInvalid(data, file)
         if (err) {
             error.push(...err)
         }
@@ -143,7 +143,7 @@ const updateProduct = async function (req, res) {
             let uploadedFileURL = await uploadFile(file[0])
             data.prductImage = uploadedFileURL
         }
-        let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true });
+        let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
             return res.status(404).send({ status: false, message: "Product not found." })
 
@@ -159,7 +159,7 @@ const updateProduct = async function (req, res) {
 const deleteProduct = async function (req, res) {
     try {
         const productId = req.body.productId
-        if (!isValidObjectId(productId)) {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).send({ status: false, msg: "productId is invalid" });
         }
 
