@@ -2,12 +2,13 @@ const express = require("express")
 const route = express.Router()
 const { registerUser, userLogin, updateUserProfile, getUserDetails } = require("../controllers/userController")
 const { createProduct, getProducts, getProductById, updateProduct, deleteProduct } = require("../controllers/productController")
-
+const  { userAuthentication }= require("../middlewares/authentication")
+const  { userAuthorization }= require("../middlewares/authorization")
 //User
 route.post("/register", registerUser)
 route.post("/login", userLogin)
-route.get("/user/:userId/profile", getUserDetails)
-route.put("/user/:userId/profile", updateUserProfile)
+route.get("/user/:userId/profile",userAuthentication, getUserDetails)
+route.put("/user/:userId/profile",userAuthentication, userAuthorization, updateUserProfile)
 
 //Product
 route.post("/products", createProduct)

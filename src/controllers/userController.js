@@ -93,10 +93,6 @@ const getUserDetails = async function (req, res) {
     try {
 
         const userIdfromParams = req.params.userId
-
-        if (!isValidObjectId(userIdfromParams))
-            return res.status(400).send({ status: false, message: "Valid UserId is Required" });
-
         const checkId = await userModel.findOne({ _id: userIdfromParams }).lean()
         if (!checkId)
             return res.status(404).send({ status: false, message: "User Not Found" });

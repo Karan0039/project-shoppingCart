@@ -1,7 +1,8 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
 const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
-const mongoose = require("mongoose")
+const { isValidObjectId } = require("mongoose")
+
 //1.
 const createProduct = async function (req, res) {
     try {
@@ -57,7 +58,7 @@ const getProductById = async (req, res) => {
     try {
         const data = req.params.productId
 
-        if (!mongoose.Types.ObjectId.isValid(data)) {
+        if (!isValidObjectId(data)) {
             return res.status(400).send({ status: false, message: "Invaild Product Id" })
         }
         //find the productId which is deleted key is false--
@@ -83,7 +84,7 @@ const updateProduct = async function (req, res) {
         let data = req.body
         let file = req.files
         let error = []
-        if (!mongoose.isValidObjectId(productId))
+        if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
 
         let err = isInvalid(data, file)
@@ -113,7 +114,7 @@ const updateProduct = async function (req, res) {
 const deleteProduct = async function (req, res) {
     try {
         const productId = req.body.productId
-        if (!mongoose.Types.ObjectId.isValid(productId)) {
+        if (!isValidObjectId(productId)) {
             return res.status(400).send({ status: false, msg: "productId is invalid" });
         }
 
