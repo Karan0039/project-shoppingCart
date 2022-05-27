@@ -42,49 +42,49 @@ const getProducts = async (req, res) => {
     try {
         let reqParams = req.query
 
-    let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
+        let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
 
-    if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
+        if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
 
-    if (findProduct) {
-      return res.status(200).send({ status: true, message: "successfull", data: findProduct })
+        if (findProduct) {
+            return res.status(200).send({ status: true, message: "successfull", data: findProduct })
+        }
+
+        let { size, name, priceGreaterThan, priceLessThan } = reqParams
+
+        if (size == "" || size) {
+            if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
+        }
+
+        if (name == "" || name) {
+            if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
+        }
+
+        if (priceGreaterThan == "" || priceGreaterThan) {
+            if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+        }
+
+        if (priceLessThan == "" || priceLessThan) {
+            if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+        }
+
+        // let result = { size, name, priceGreaterThan, priceLessThan, isDeleted: false }
+        // name=name.toUpperCase()
+        //console.log(name, typeof priceGreaterThan)
+        priceGreaterThan = Number(priceGreaterThan)
+        priceLessThan = Number(priceLessThan)
+        let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }] }] }).sort({ price: 1 })
+
+        if (!filterProduct) return res.status(404).send({ status: false, message: "Product not found" })
+
+        if (filterProduct) {
+            return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
+        }
+
     }
-  
-    let { size, name, priceGreaterThan, priceLessThan } = reqParams
 
-    if (size == "" || size) {
-      if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
-    }
 
-    if (name == "" || name) {
-      if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
-    }
-
-    if (priceGreaterThan == "" || priceGreaterThan) {
-      if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
-    }
-
-    if (priceLessThan == "" || priceLessThan) {
-      if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
-    }
-
-    // let result = { size, name, priceGreaterThan, priceLessThan, isDeleted: false }
-    // name=name.toUpperCase()
-    //console.log(name, typeof priceGreaterThan)
-    priceGreaterThan = Number(priceGreaterThan)
-    priceLessThan = Number(priceLessThan)
-    let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{price: {$gt: priceGreaterThan} }, { price:{$lt: priceLessThan} }] }] }).sort({ price: 1 })
-
-    if (!filterProduct) return res.status(404).send({ status: false, message: "Product not found" })
-
-    if (filterProduct) {
-      return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
-    }
-
-  }
-
-    
-    catch(error) {
+    catch (error) {
         return res.status(500).send({ status: false, error: error.message })
 
     }
@@ -128,8 +128,8 @@ const updateProduct = async function (req, res) {
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
 
-        if(Object.keys(data).length==0||file.length==0)
-            return res.status(400).send({status: false, message: "Please provide product detail(s) to be updated."})
+        if (Object.keys(data).length == 0 || file.length == 0)
+            return res.status(400).send({ status: false, message: "Please provide product detail(s) to be updated." })
 
         let err = isInvalid(data, file)
         if (err) {
@@ -157,25 +157,18 @@ const updateProduct = async function (req, res) {
 //5.
 const deleteProduct = async function (req, res) {
     try {
-        const productId = req.body.productId
+        const productId = req.params.productId
         if (!isValidObjectId(productId)) {
             return res.status(400).send({ status: false, msg: "productId is invalid" });
         }
-
-        const findProduct = await productModel.findById(productId);
-
-        if (!findProduct) {
-            return res.status(404).send({ status: false, message: 'product does not exists' })
-        }
-        if (findProduct.isDeleted == true) {
-            return res.status(400).send({ status: false, message: "product already deleted." })
-        }
         const deletedDetails = await productModel.findOneAndUpdate(
-            { _id: productId },
+            { _id: productId, isDeleted: false },
             { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true })
 
-        return res.status(200).send({ status: true, message: 'Product deleted successfully.', data: deletedDetails })
-
+        if (!deletedDetails) {
+            return res.status(404).send({ status: false, message: 'product does not exist' })
+        }
+        return res.status(200).send({ status: true, message: 'Product deleted successfully.' })
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
