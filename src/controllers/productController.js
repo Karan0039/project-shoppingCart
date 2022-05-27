@@ -132,7 +132,7 @@ const updateProduct = async function (req, res) {
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
 
-        if (Object.keys(data).length == 0 || file.length == 0)
+        if (Object.keys(data).length == 0 && file.length == 0)
             return res.status(400).send({ status: false, message: "Please provide product detail(s) to be updated." })
 
         let err = isInvalid(data, file)
