@@ -47,10 +47,51 @@ const createProduct = async function (req, res) {
 
 const getProducts = async (req, res) => {
     try {
-        
+        let reqParams = req.query
 
+    let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
+
+    if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
+
+    if (findProduct) {
+      return res.status(200).send({ status: true, message: "successfull", data: findProduct })
     }
-    catch (error) {
+  
+    let { size, name, priceGreaterThan, priceLessThan } = reqParams
+
+    if (size == "" || size) {
+      if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
+    }
+
+    if (name == "" || name) {
+      if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
+    }
+
+    if (priceGreaterThan == "" || priceGreaterThan) {
+      if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+    }
+
+    if (priceLessThan == "" || priceLessThan) {
+      if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+    }
+
+    // let result = { size, name, priceGreaterThan, priceLessThan, isDeleted: false }
+    // name=name.toUpperCase()
+    //console.log(name, typeof priceGreaterThan)
+    priceGreaterThan = Number(priceGreaterThan)
+    priceLessThan = Number(priceLessThan)
+    let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{price: {$gt: priceGreaterThan} }, { price:{$lt: priceLessThan} }] }] }).sort({ price: 1 })
+
+    if (!filterProduct) return res.status(404).send({ status: false, message: "Product not found" })
+
+    if (filterProduct) {
+      return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
+    }
+
+  }
+
+    
+    catch(error) {
         return res.status(500).send({ status: false, error: error.message })
 
     }
