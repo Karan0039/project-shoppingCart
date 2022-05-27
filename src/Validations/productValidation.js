@@ -44,7 +44,7 @@ function isRequired(data, files) {
 }
 
 
-function isInvalid(data, getTitle, files) {
+function isInvalid(data, files, getTitle) {
     try {
         let error = []
 
@@ -80,7 +80,7 @@ function isInvalid(data, getTitle, files) {
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (data.availableSizes) {
-            //console.log(data.availableSizes)
+            // console.log(data.availableSizes)
             let arr1 = (data.availableSizes).split(",")
             data.availableSizes = arr1.map(x => x.toUpperCase());
             for (let i in data.availableSizes) {

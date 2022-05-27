@@ -1,10 +1,12 @@
 const jwt = require("jsonwebtoken")
-const { isValidObjectId } = require("mongoose")
 const userModel = require("../models/userModel")
 const { uploadFile } = require("../awsS3/aws")
 const bcrypt = require("bcrypt")
 const { isRequired, isInvalid, isValid } = require("../Validations/userValidation")
 
+let initialCapital = function (value) {
+    return value[0].toUpperCase() + value.slice(1).toLowerCase()
+}
 
 //1.
 const registerUser = async function (req, res) {
@@ -27,9 +29,6 @@ const registerUser = async function (req, res) {
             return res.status(400).send({ status: false, message: error })
 
         //changing data to proper format
-        let initialCapital = function (value) {
-            return value[0].toUpperCase() + value.slice(1).toLowerCase()
-        }
         data.fname = initialCapital(data.fname)
         data.lname = initialCapital(data.lname)
         data.address.shipping.city = initialCapital(data.address.shipping.city)
@@ -114,16 +113,13 @@ const updateUserProfile = async function (req, res) {
     let getPhone = await userModel.findOne({ phone: data.phone })
     let error = []
     let err = isInvalid(data, getEmail, getPhone, file);
-    if (isInvalid(data, getEmail, getPhone)) {
+    if (err)
         error.push(...err)
-    }
+    
     if (error.length > 0)
         return res.status(400).send({ status: false, message: error })
 
     //changing data to proper format
-    let initialCapital = function (value) {
-        return value[0].toUpperCase() + value.slice(1).toLowerCase()
-    }
     if (data.fname?.trim())
         data.fname = initialCapital(data.fname)
 

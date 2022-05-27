@@ -86,7 +86,7 @@ function isRequired(data, files) {
 
 
 
-function isInvalid(data, getEmail, getPhone) {
+function isInvalid(data, getEmail, getPhone, files) {
     try {
         let error = []
         //checks for valid fname
@@ -105,9 +105,10 @@ function isInvalid(data, getEmail, getPhone) {
             error.push("email is already in use")
 
         //check for image file
-        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
-            error.push("upload a valid image file")
-
+        if (files) {
+            if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+                error.push("upload a valid image file")
+        }
         //checks for valid phone number
         if (data.phone?.trim() && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
             error.push("enter valid mobile number")

@@ -1,6 +1,6 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../awsS3/aws")
-const { isRequired, isInvalid, isValid } = require("../Validations/productValidation")
+const { isRequired, isInvalid } = require("../Validations/productValidation")
 const { isValidObjectId } = require("mongoose")
 
 //1.
@@ -14,7 +14,7 @@ const createProduct = async function (req, res) {
         if (err1) {
             error.push(...err1)
         }
-        let err2 = isInvalid(data, getTitle, files)
+        let err2 = isInvalid(data, files, getTitle)
         if (err2) {
             error.push(...err2)
         }
@@ -41,20 +41,14 @@ const createProduct = async function (req, res) {
 const getProducts = async (req, res) => {
     try {
         let reqParams = req.query
-        //When no query parameter are given
-        if (Object.keys(reqParams).length == 0) {
-            let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
-            if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
-            if (findProduct)
-                return res.status(200).send({ status: true, message: "successfull", data: findProduct })
-        }
-        //When query parameters are given
-        let { size, name, priceGreaterThan, priceLessThan } = reqParams
-        filter = { isDeleted: false }
+        let filter = { isDeleted: false }
+        
+        if(reqParams){
+        let { size, name, priceGreaterThan, priceLessThan } = reqParams        
         if (name)
             filter.title = name
         if (size)
-            filter.availableSizes = [...new Set(size)].map(x => x.toUpperCase())
+            filter.availableSizes = size    
 
         let error = []
         let err = isInvalid(filter)
@@ -66,7 +60,6 @@ const getProducts = async (req, res) => {
 
         if (size)
             filter.availableSizes = { $in: filter.availableSizes }
-
 
         if (priceGreaterThan || priceLessThan) {
             filter.price = {}
@@ -82,7 +75,7 @@ const getProducts = async (req, res) => {
         }
         if ((priceGreaterThan && priceLessThan) && (priceGreaterThan > priceLessThan))
         return res.status(404).send({ status: false, message: "Invalid price range" })
-           
+    }
         let filterProduct = await productModel.find(filter).sort({ price: 1 })
         if (filterProduct.length == 0) return res.status(404).send({ status: false, message: "Product not found" })
 
@@ -99,7 +92,6 @@ const getProducts = async (req, res) => {
 //======================================================Get products by path params===================================================================//
 
 const getProductById = async (req, res) => {
-
     try {
         const data = req.params.productId
 
@@ -128,6 +120,7 @@ const updateProduct = async function (req, res) {
         let productId = req.params.productId
         let data = req.body
         let file = req.files
+        let getTitle = await productModel.findOne({ title: data.title })
         let error = []
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
@@ -135,10 +128,10 @@ const updateProduct = async function (req, res) {
         if (Object.keys(data).length == 0 && file.length == 0)
             return res.status(400).send({ status: false, message: "Please provide product detail(s) to be updated." })
 
-        let err = isInvalid(data, file)
-        if (err) {
+        let err = isInvalid(data, file, getTitle)
+        if (err) 
             error.push(...err)
-        }
+        
         if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 

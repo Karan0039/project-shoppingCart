@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken")
+const secret = "Project 5"
 
-const decodeToken = function (token) {
+let decodeToken = function (token) {
     return jwt.verify(token, secret, function (err, data) {
         if (err)
             return null
         else
             return data
-    })
+    })   
 }
+
 const userAuthentication = function (req, res, next) {
     try {
         let token = req.headers['x-api-key']
@@ -21,7 +23,6 @@ const userAuthentication = function (req, res, next) {
             })
         req.decodedToken = verifyToken
         next()
-
     } catch (err) {
         return res.status(500).send({ error: err.message })
     }

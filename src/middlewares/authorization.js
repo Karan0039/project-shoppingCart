@@ -7,7 +7,7 @@ const userAuthorization = function (req, res, next) {
         if (!isValidObjectId(userId))
             return res.status(400).send({ status: false, message: "Valid UserId is Required" });
 
-        if (!userId !== req.decodedToken.userId)
+        if (userId !== req.decodedToken.userId)
             return res.status(400).send({ status: false, message: "Unauthorized Access!!" });
 
         next()
