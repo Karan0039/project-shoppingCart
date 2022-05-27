@@ -56,13 +56,13 @@ function isInvalid(data, getTitle, files) {
         if (data.price?.trim() && !(/^([0-9]+)?.?([0-9])+$/.test(data.price)))
             error.push("enter valid price")
 
-        // //checks for valid currencyId
-        // if (data.currencyId?.trim() && typeof data.currencyId !== "string")
-        //     error.push("enter a valid currencyId")
+        //checks for valid currencyId
+        if (data.currencyId?.trim() && data.currencyId.toUpperCase()=="INR")
+            error.push("only 'INR' as currencyId is supported")
 
-        // //checks for valid currencyFormat
-        // if (data.currencyFormat?.trim() && typeof data.currencyFormat !== "string")
-        //     error.push("enter a valid currencyFormat")
+        //checks for valid currencyFormat
+        if (data.currencyFormat?.trim() &&  data.currencyFormat == "₹")
+            error.push("only '₹' as currencyFormat is supported")
 
         // checks for valid isFreeShipping
         if (data.isFreeShipping?.trim()) {
@@ -73,9 +73,10 @@ function isInvalid(data, getTitle, files) {
         }
 
         //check for image file
+        if(files){
         if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
             error.push("upload a valid image file")
-
+        }
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (data.availableSizes) {

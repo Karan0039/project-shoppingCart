@@ -41,52 +41,56 @@ const createProduct = async function (req, res) {
 const getProducts = async (req, res) => {
     try {
         let reqParams = req.query
-
-        let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
-
-        if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
-
-        if (findProduct) {
-            return res.status(200).send({ status: true, message: "successfull", data: findProduct })
+        //When no query parameter are given
+        if (Object.keys(reqParams).length == 0) {
+            let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
+            if (!findProduct) return res.status(404).send({ status: false, message: "Product not found" })
+            if (findProduct)
+                return res.status(200).send({ status: true, message: "successfull", data: findProduct })
         }
-
+        //When query parameters are given
         let { size, name, priceGreaterThan, priceLessThan } = reqParams
+        filter = { isDeleted: false }
+        if (name)
+            filter.title = name
+        if (size)
+            filter.availableSizes = [...new Set(size)].map(x => x.toUpperCase())
 
-        if (size == "" || size) {
-            if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
+        let error = []
+        let err = isInvalid(filter)
+        if (err) 
+            error.push(...err)
+
+        if (error.length > 0)
+            return res.status(400).send({ status: false, message: error })
+
+        if (size)
+            filter.availableSizes = { $in: filter.availableSizes }
+
+
+        if (priceGreaterThan || priceLessThan) {
+            filter.price = {}
+
+            if (priceGreaterThan) {
+                priceGreaterThan = Number(priceGreaterThan)
+                filter.price.$gt = priceGreaterThan
+            }
+            if (priceLessThan) {
+                priceLessThan = Number(priceLessThan)
+                filter.price.$lt = priceLessThan
+            }
         }
+        if ((priceGreaterThan && priceLessThan) && (priceGreaterThan > priceLessThan))
+        return res.status(404).send({ status: false, message: "Invalid price range" })
+           
+        let filterProduct = await productModel.find(filter).sort({ price: 1 })
+        if (filterProduct.length == 0) return res.status(404).send({ status: false, message: "Product not found" })
 
-        if (name == "" || name) {
-            if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
-        }
-
-        if (priceGreaterThan == "" || priceGreaterThan) {
-            if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
-        }
-
-        if (priceLessThan == "" || priceLessThan) {
-            if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
-        }
-
-        // let result = { size, name, priceGreaterThan, priceLessThan, isDeleted: false }
-        // name=name.toUpperCase()
-        //console.log(name, typeof priceGreaterThan)
-        priceGreaterThan = Number(priceGreaterThan)
-        priceLessThan = Number(priceLessThan)
-        let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }] }] }).sort({ price: 1 })
-
-        if (!filterProduct) return res.status(404).send({ status: false, message: "Product not found" })
-
-        if (filterProduct) {
+        if (filterProduct)
             return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
-        }
-
     }
-
-
     catch (error) {
         return res.status(500).send({ status: false, error: error.message })
-
     }
 }
 

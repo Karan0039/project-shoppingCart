@@ -91,7 +91,6 @@ const userLogin = async function (req, res) {
 //3.
 const getUserDetails = async function (req, res) {
     try {
-
         const userIdfromParams = req.params.userId
         const checkId = await userModel.findOne({ _id: userIdfromParams }).lean()
         if (!checkId)
@@ -159,4 +158,3 @@ const updateUserProfile = async function (req, res) {
 };
 
 module.exports = { registerUser, userLogin, updateUserProfile, getUserDetails }
-
