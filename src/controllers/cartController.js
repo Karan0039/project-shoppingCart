@@ -28,8 +28,10 @@ const updateCart = async function (req, res) {
 //3
 const getCart = async function (req, res) {
     try {
-
-
+        let cart = await cartModel.find({ userId: req.params.userId, isDeleted: false })
+        if (!cart)
+            return res.status(404).send({ status: false, message: "Cart not found." })
+        return res.status(200).send({ status: true, message: "Cart details", data: cart })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }
@@ -39,8 +41,10 @@ const getCart = async function (req, res) {
 //4
 const deleteCart = async function (req, res) {
     try {
-
-
+        let cart = await cartModel.findOneAndUpdate({ userId: req.params.userId, isDeleted: false }, { isDeleted: true, deletedAt: new Date() })
+        if (!cart)
+            return res.status(404).send({ status: false, message: "Cart not found." })
+        return res.status(200).send({ status: true, message: "Cart deleted successfully" })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }

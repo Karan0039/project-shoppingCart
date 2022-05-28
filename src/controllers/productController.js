@@ -125,20 +125,20 @@ const updateProduct = async function (req, res) {
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
 
-        if (Object.keys(data).length == 0 && file.length == 0)
+        if (Object.keys(data).length==0&&file==undefined)
             return res.status(400).send({ status: false, message: "Please provide product detail(s) to be updated." })
 
         let err = isInvalid(data, file, getTitle)
         if (err) 
-            error.push(...err)
-        
-        if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 
         if (file.length > 0) {
             let uploadedFileURL = await uploadFile(file[0])
             data.prductImage = uploadedFileURL
         }
+        if(data.price)
+            data.price = parseFloat(parseFloat(data.price).toFixed(2))
+            
         let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
             return res.status(404).send({ status: false, message: "Product not found." })
