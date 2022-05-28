@@ -136,6 +136,9 @@ const updateProduct = async function (req, res) {
             let uploadedFileURL = await uploadFile(file[0])
             data.prductImage = uploadedFileURL
         }
+        if(data.price)
+            data.price = parseFloat(parseFloat(data.price).toFixed(2))
+            
         let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
             return res.status(404).send({ status: false, message: "Product not found." })
