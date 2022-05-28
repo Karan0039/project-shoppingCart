@@ -111,13 +111,12 @@ const updateUserProfile = async function (req, res) {
     let file = req.files
     let getEmail = await userModel.findOne({ email: data.email })
     let getPhone = await userModel.findOne({ phone: data.phone })
-    let error = []
-    let err = isInvalid(data, getEmail, getPhone, file);
+    if (Object.keys(data).length==0&&file==undefined)
+            return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })
+
+    let err = isInvalid(data, getEmail, getPhone, file)
     if (err)
-        error.push(...err)
-    
-    if (error.length > 0)
-        return res.status(400).send({ status: false, message: error })
+        return res.status(400).send({ status: false, message: error })        
 
     //changing data to proper format
     if (data.fname?.trim())
@@ -139,7 +138,7 @@ const updateUserProfile = async function (req, res) {
     }
     if (data.email?.trim())
         data.email = data.email.toLowerCase()
-    if (file.length > 0) {
+    if (file&&file.length > 0) {
         let uploadedFileURL = await uploadFile(file[0])
         data.profileImage = uploadedFileURL
     }
