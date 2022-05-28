@@ -80,7 +80,13 @@ function isInvalid(data, files, getTitle) {
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (data.availableSizes) {
-            // console.log(data.availableSizes)
+            try{data.availableSizes=JSON.parse(data.availableSizes)
+            }catch(err){
+                data.availableSizes=data.availableSizes
+            }
+            if(Array.isArray(data.availableSizes))
+            data.availableSizes=data.availableSizes.join(",")
+
             let arr1 = (data.availableSizes).split(",")
             data.availableSizes = arr1.map(x => x.toUpperCase());
             for (let i in data.availableSizes) {
