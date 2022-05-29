@@ -7,6 +7,7 @@ const { isValidObjectId } = require("mongoose")
 const createProduct = async function (req, res) {
     try {
         let data = req.body
+        
         let files = req.files
         let getTitle = await productModel.findOne({ title: data.title })
         let error = []
@@ -25,7 +26,7 @@ const createProduct = async function (req, res) {
         data.productImage = uploadedFileURL
 
         data.price = parseFloat(parseFloat(data.price).toFixed(2))
-
+        
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
     }
@@ -42,40 +43,40 @@ const getProducts = async (req, res) => {
     try {
         let reqParams = req.query
         let filter = { isDeleted: false }
-        
-        if(reqParams){
-        let { size, name, priceGreaterThan, priceLessThan } = reqParams        
-        if (name)
-            filter.title = name
-        if (size)
-            filter.availableSizes = size    
 
-        let error = []
-        let err = isInvalid(filter)
-        if (err) 
-            error.push(...err)
+        if (reqParams) {
+            let { size, name, priceGreaterThan, priceLessThan } = reqParams
+            if (name)
+                filter.title = name
+            if (size)
+                filter.availableSizes = size
 
-        if (error.length > 0)
-            return res.status(400).send({ status: false, message: error })
+            let error = []
+            let err = isInvalid(filter)
+            if (err)
+                error.push(...err)
 
-        if (size)
-            filter.availableSizes = { $in: filter.availableSizes }
+            if (error.length > 0)
+                return res.status(400).send({ status: false, message: error })
 
-        if (priceGreaterThan || priceLessThan) {
-            filter.price = {}
+            if (size)
+                filter.availableSizes = { $in: filter.availableSizes }
 
-            if (priceGreaterThan) {
-                priceGreaterThan = Number(priceGreaterThan)
-                filter.price.$gt = priceGreaterThan
+            if (priceGreaterThan || priceLessThan) {
+                filter.price = {}
+
+                if (priceGreaterThan) {
+                    priceGreaterThan = Number(priceGreaterThan)
+                    filter.price.$gt = priceGreaterThan
+                }
+                if (priceLessThan) {
+                    priceLessThan = Number(priceLessThan)
+                    filter.price.$lt = priceLessThan
+                }
             }
-            if (priceLessThan) {
-                priceLessThan = Number(priceLessThan)
-                filter.price.$lt = priceLessThan
-            }
+            if ((priceGreaterThan && priceLessThan) && (priceGreaterThan > priceLessThan))
+                return res.status(404).send({ status: false, message: "Invalid price range" })
         }
-        if ((priceGreaterThan && priceLessThan) && (priceGreaterThan > priceLessThan))
-        return res.status(404).send({ status: false, message: "Invalid price range" })
-    }
         let filterProduct = await productModel.find(filter).sort({ price: 1 })
         if (filterProduct.length == 0) return res.status(404).send({ status: false, message: "Product not found" })
 
@@ -121,24 +122,23 @@ const updateProduct = async function (req, res) {
         let data = req.body
         let file = req.files
         let getTitle = await productModel.findOne({ title: data.title })
-        let error = []
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "The given productId is not a valid objectId" })
 
-        if (Object.keys(data).length==0&&file==undefined)
+        if (Object.keys(data).length == 0 && file == undefined)
             return res.status(400).send({ status: false, message: "Please provide product detail(s) to be updated." })
 
         let err = isInvalid(data, file, getTitle)
-        if (err) 
-            return res.status(400).send({ status: false, message: error })
+        if (err)
+            return res.status(400).send({ status: false, message: err })
 
         if (file.length > 0) {
             let uploadedFileURL = await uploadFile(file[0])
-            data.prductImage = uploadedFileURL
+            data.productImage = uploadedFileURL
         }
-        if(data.price)
+        if (data.price)
             data.price = parseFloat(parseFloat(data.price).toFixed(2))
-            
+
         let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
             return res.status(404).send({ status: false, message: "Product not found." })

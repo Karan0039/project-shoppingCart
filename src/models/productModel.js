@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema({
     currencyFormat: {
         type: String,
         required: true,
-        default:"₹"
+        default:"₹" 
         //Rupee symbol
     },
     isFreeShipping: {

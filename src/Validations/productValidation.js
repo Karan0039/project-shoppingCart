@@ -48,24 +48,26 @@ function isInvalid(data, files, getTitle) {
     try {
         let error = []
 
+        if (data.title?.trim().length == 0)
+            error.push("enter a valid title")
         //check unique title
         if (getTitle)
             error.push("title is already in use")
 
         //checks for valid price
-        if (data.price?.trim() && !(/^([0-9]+)?.?([0-9])+$/.test(data.price)))
+        if (typeof data.price == "string" && !(/^([0-9]+)?.?([0-9])+$/.test(data.price)))
             error.push("enter valid price")
 
         //checks for valid currencyId
-        if (data.currencyId?.trim() && data.currencyId.toUpperCase()=="INR")
+        if (typeof data.currencyId == "string" && data.currencyId.toUpperCase() !== "INR")
             error.push("only 'INR' as currencyId is supported")
 
         //checks for valid currencyFormat
-        if (data.currencyFormat?.trim() &&  data.currencyFormat == "₹")
+        if (typeof data.currencyFormat == "string" && data.currencyFormat !== "₹")
             error.push("only '₹' as currencyFormat is supported")
 
         // checks for valid isFreeShipping
-        if (data.isFreeShipping?.trim()) {
+        if (typeof data.isFreeShipping == "string") {
             data.isFreeShipping = data.isFreeShipping.toLowerCase()
             let arr = ["true", "false"]
             if (!arr.includes(data.isFreeShipping))
@@ -73,19 +75,20 @@ function isInvalid(data, files, getTitle) {
         }
 
         //check for image file
-        if(files){
-        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
-            error.push("upload a valid image file")
+        if (files) {
+            if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+                error.push("upload a valid image file")
         }
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
-        if (data.availableSizes) {
-            try{data.availableSizes=JSON.parse(data.availableSizes)
-            }catch(err){
-                data.availableSizes=data.availableSizes
+        if (typeof data.availableSizes == "string") {
+            try {
+                data.availableSizes = JSON.parse(data.availableSizes)
+            } catch (err) {
+                data.availableSizes = data.availableSizes
             }
-            if(Array.isArray(data.availableSizes))
-            data.availableSizes=data.availableSizes.join(",")
+            if (Array.isArray(data.availableSizes))
+                data.availableSizes = data.availableSizes.join(",")
 
             let arr1 = (data.availableSizes).split(",")
             data.availableSizes = arr1.map(x => x.toUpperCase());
@@ -98,8 +101,8 @@ function isInvalid(data, files, getTitle) {
         }
 
         //checks for valid installments
-        if (data.installments?.trim() && !(/^[0-9]+$/.test(data.installments.trim())))
-            error.push("enter a valid installments")
+        if (typeof data.installments == "string" && !(/^\d{1,2}$/.test(data.installments?.trim())))
+            error.push("enter a valid installments (accpets upto 2 digits only)")
 
         if (error.length > 0)
             return error;
