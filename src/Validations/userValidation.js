@@ -1,7 +1,7 @@
 //check Validity
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
-    if (typeof value === 'string' && value.trim().length === 0) return false
+    //if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
 }
 
@@ -25,7 +25,7 @@ function isRequired(data, files) {
             error.push("email is required")
 
         //check if image file is present
-        if (!files || files.length == 0)
+        if (files.length == 0)
             error.push("image file is required")
 
         //checks if phone is present or not
@@ -76,6 +76,7 @@ function isRequired(data, files) {
         }
         else error.push("address is required")
 
+
         if (error.length > 0)
             return error;
     }
@@ -90,33 +91,32 @@ function isInvalid(data, getEmail, getPhone, files) {
     try {
         let error = []
         //checks for valid fname
-        if (data.fname?.trim() && !(/^[a-zA-Z]+$/.test(data.fname)))
+        if (typeof data.fname == "string" && !(/^[a-zA-Z]+$/.test(data.fname?.trim())))
             error.push("enter a valid first name")
 
         //checks for valid lname
-        if (data.lname?.trim() && !(/^[a-zA-Z]+$/.test(data.lname)))
+        if (typeof data.lname == "string" && !(/^[a-zA-Z]+$/.test(data.lname?.trim())))
             error.push("enter a valid last name")
 
         //validate email
-        if (data.email?.trim() && !(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(data.email)))
+        if (typeof data.email == "string" && !(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(data.email?.trim())))
             error.push("enter a valid email")
         //check for duplicate email
         if (getEmail)
             error.push("email is already in use")
 
         //check for image file
-        if (files) {
-            if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
-                error.push("upload a valid image file")
-        }
+        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+            error.push("upload a valid image file")
+
         //checks for valid phone number
-        if (data.phone?.trim() && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
+        if (typeof data.phone == "string" && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
             error.push("enter valid mobile number")
         //check unique phone number
         if (getPhone)
             error.push("mobile number is already in use")
 
-        if (/[ ]+/.test(data.password?.trim()))
+        if (typeof data.password == "string" && /[ ]+/.test(data.password?.trim()))
             error.push("enter valid password")
         //checks password length
         if (data.password?.trim() && (data.password.length < 8 || data.password.length > 15))
@@ -126,20 +126,22 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (isValid(address)) {
 
             if (address.shipping) {
-
-                if (address.shipping.city?.trim() && !(/^[a-zA-Z]+$/.test(address.shipping.city)))
+                if (typeof address.shipping.street == "string" && /[ ]+/.test(address.shipping.street?.trim()))
+                    error.push("enter a valid shipping/street")
+                if (typeof address.shipping.city == "string" && !(/^[a-zA-Z]+$/.test(address.shipping.city?.trim())))
                     error.push("enter a valid shipping/city name")
 
-                if (address.shipping.pincode?.trim() && !(/^[1-9][0-9]{5}$/.test(address.shipping.pincode)))
+                if (typeof address.shipping.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.shipping.pincode?.trim())))
                     error.push("enter a valid shipping/pincode")
             }
 
             if (address.billing) {
-
-                if (address.billing.city?.trim() && !(/^[a-zA-Z]+$/.test(address.billing.city)))
+                if (typeof address.billing.street == "string" && /[ ]+/.test(address.billing.street?.trim()))
+                    error.push("enter a valid billing/street")
+                if (typeof address.billing.city == "string" && !(/^[a-zA-Z]+$/.test(address.billing.city?.trim())))
                     error.push("enter a valid billing/city name")
 
-                if (address.billing.pincode?.trim() && !(/^[1-9][0-9]{5}$/.test(address.billing.pincode)))
+                if (typeof address.billing.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.billing.pincode?.trim())))
                     error.push("enter a valid billing/pincode")
             }
         }
@@ -148,7 +150,7 @@ function isInvalid(data, getEmail, getPhone, files) {
             return error;
     }
     catch (err) {
-        console.log({ status: false, message: err.message })
+        console.log({ status: false, message: err })
     }
 }
 

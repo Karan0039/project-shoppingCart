@@ -1,7 +1,7 @@
 //check Validity
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
-    if (typeof value === 'string' && value.trim().length === 0) return false
+    //if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
 }
 
@@ -32,7 +32,7 @@ function isRequired(data, files) {
             error.push("price is required")
 
         //check if image file is present
-        if (!files || files.length == 0)
+        if (files.length == 0)
             error.push("image file is required")
 
         if (error.length > 0)
@@ -47,20 +47,20 @@ function isRequired(data, files) {
 function isInvalid(data, files, getTitle) {
     try {
         let error = []
-
-        if (data.title?.trim().length == 0)
+        if (typeof data.title == "string" && data.title?.trim().length == 0)
             error.push("enter a valid title")
         //check unique title
         if (getTitle)
             error.push("title is already in use")
 
         //checks for valid price
-        if (typeof data.price == "string" && !(/^([0-9]+)?.?([0-9])+$/.test(data.price)))
+        if (typeof data.price == "string" && !(/^([0-9]+)?.?([0-9])+$/.test(data.price?.trim())))
             error.push("enter valid price")
 
         //checks for valid currencyId
-        if (typeof data.currencyId == "string" && data.currencyId.toUpperCase() !== "INR")
+        if (typeof data.currencyId == "string" && data.currencyId?.trim().toUpperCase() !== "INR")
             error.push("only 'INR' as currencyId is supported")
+        else data.currencyId = data.currencyId.trim().toUpperCase()
 
         //checks for valid currencyFormat
         if (typeof data.currencyFormat == "string" && data.currencyFormat !== "₹")
@@ -75,10 +75,9 @@ function isInvalid(data, files, getTitle) {
         }
 
         //check for image file
-        if (files) {
-            if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
-                error.push("upload a valid image file")
-        }
+        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+            error.push("upload a valid image file")
+
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (typeof data.availableSizes == "string") {

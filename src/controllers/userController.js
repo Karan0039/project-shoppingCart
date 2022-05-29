@@ -17,14 +17,14 @@ const registerUser = async function (req, res) {
         let getEmail = await userModel.findOne({ email: data.email })
         let getPhone = await userModel.findOne({ phone: data.phone })
         let error = []
-        if (isRequired(data, files)) {
-            let err = isRequired(data, files);
-            error.push(...err)
-        }
-        if (isInvalid(data, getEmail, getPhone, files)) {
-            let err = isInvalid(data, getEmail, getPhone);
-            error.push(...err)
-        }
+        let err1 = isRequired(data, files)
+        if (err1)
+            error.push(...err1)
+
+        let err2 = isInvalid(data, getEmail, getPhone, files);
+        if (err2)
+            error.push(...err2)
+
         if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 
@@ -111,16 +111,16 @@ const updateUserProfile = async function (req, res) {
     let file = req.files
     let getEmail = await userModel.findOne({ email: data.email })
     let getPhone = await userModel.findOne({ phone: data.phone })
-    if (Object.keys(data).length==0&&file==undefined)
-            return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })
+    if (Object.keys(data).length == 0 && file == undefined)
+        return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })
 
     let err = isInvalid(data, getEmail, getPhone, file)
     if (err)
-        return res.status(400).send({ status: false, message: error })        
+        return res.status(400).send({ status: false, message: err })
 
     //changing data to proper format
     if (data.fname?.trim())
-        data.fname = initialCapital(data.fname)
+        data.fname = initialCapital(data.fname.trim())
 
     if (data.lname?.trim())
         data.lname = initialCapital(data.lname)
@@ -138,16 +138,16 @@ const updateUserProfile = async function (req, res) {
     }
     if (data.email?.trim())
         data.email = data.email.toLowerCase()
-    if (file&&file.length > 0) {
+    if (file && file.length > 0) {
         let uploadedFileURL = await uploadFile(file[0])
         data.profileImage = uploadedFileURL
     }
 
-    let updatedProfile = await userModel.findByIdAndUpdate(userId, [{ $addFields: data }], { new: true });
+    let updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, [{ $addFields: data }], { new: true });
 
     if (data.password?.trim()) {
         data.password = await bcrypt.hash(data.password, 10)
-        updatedProfile = await userModel.findByIdAndUpdate(userId, { $set: { password: data.password } }, { new: true })
+        updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, { $set: { password: data.password } }, { new: true })
     }
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
 };
