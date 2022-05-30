@@ -129,16 +129,16 @@ const updateUserProfile = async function (req, res) {
     if (data.address) {
         if (data.address.shipping) {
             if (data.address.shipping.city?.trim())
-                data.address.shipping.city = initialCapital(data.address.shipping.city)
+                data.address.shipping.city = initialCapital(data.address.shipping.city.trim())
         }
 
         if (data.address.billing) {
             if (data.address.billing.city?.trim())
-                data.address.billing.city = initialCapital(data.address.billing.city)
+                data.address.billing.city = initialCapital(data.address.billing.city.trim())
         }
     }
     if (data.email?.trim())
-        data.email = data.email.toLowerCase()
+        data.email = data.email.trim().toLowerCase()
     if (files.length > 0) {
         let uploadedFileURL = await uploadFile(files[0])
         data.profileImage = uploadedFileURL
