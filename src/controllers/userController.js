@@ -109,8 +109,8 @@ const updateUserProfile = async function (req, res) {
     let userId = req.params.userId;
     let data = req.body
     let files = req.files
-    console.log(req.files)
-    let getEmail = await userModel.findOne({ email: data.email })
+    console.log(req.files[0])
+    let getEmail = await userModel.findOne({ email: data.email?.trim().toLowerCase() })
     let getPhone = await userModel.findOne({ phone: data.phone })
     if (Object.keys(data).length == 0 && files.length == 0)
         return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })

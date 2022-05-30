@@ -41,10 +41,11 @@ const getCart = async function (req, res) {
 //4
 const deleteCart = async function (req, res) {
     try {
-        let cart = await cartModel.findOneAndUpdate({ userId: req.params.userId, isDeleted: false }, { isDeleted: true, deletedAt: new Date() })
+        let cart = await cartModel.findOneAndUpdate({ userId: req.params.userId, isDeleted: false }, { isDeleted: true, deletedAt: new Date(), items: [], totalItems: 0, totalPrice: 0 })
         if (!cart)
             return res.status(404).send({ status: false, message: "Cart not found." })
-        return res.status(200).send({ status: true, message: "Cart deleted successfully" })
+
+        return res.status(204).send({ status: true, message: "Cart deleted successfully" })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }
