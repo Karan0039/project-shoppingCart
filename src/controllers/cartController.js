@@ -35,7 +35,7 @@ const createCart = async function (req, res) {
         if (quantity == 0)
             return res.status(400).send({ message: "Quantity should not be zer0" })
 
-        let findCart = await cartModel.findOne({ _id: cartId, userId }).populate("items.productId")
+        let findCart = await cartModel.findOne({ _id: cartId, userId })//.populate("items.productId")
         let product = {
             productId: productId,
             quantity: quantity
@@ -43,7 +43,7 @@ const createCart = async function (req, res) {
         if (findCart) {
             let indexOfProduct = -1
             for (let i in findCart.items) {
-                if (findCart.items[i].productId._id == productId) {
+                if (findCart.items[i].productId/*._id*/ == productId) {
                     indexOfProduct = i
                     break
                 }
@@ -106,7 +106,7 @@ const updateCart = async function (req, res) {
         if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 
-        let cart = await cartModel.findOne({ _id: data.cartId, userId: req.params.userId }).populate("items.productId")
+        let cart = await cartModel.findOne({ _id: data.cartId, userId: req.params.userId })//.populate("items.productId")
         if (!cart)
             return res.status(404).send({ status: false, message: "Cart not found" })
 
@@ -115,7 +115,7 @@ const updateCart = async function (req, res) {
             
         let indexOfProduct = -1
         for (let i in cart.items) {
-            if (cart.items[i].productId._id == data.productId) {
+            if (cart.items[i].productId/*._id*/ == data.productId) {
                 indexOfProduct = i
                 break
             }
@@ -156,7 +156,7 @@ const updateCart = async function (req, res) {
 //3
 const getCart = async function (req, res) {
     try {
-        let cart = await cartModel.findOne({ userId: req.params.userId }).populate("items.productId")
+        let cart = await cartModel.findOne({ userId: req.params.userId })//.populate("items.productId")
         if (!cart)
             return res.status(404).send({ status: false, message: "Cart not found." })
 
