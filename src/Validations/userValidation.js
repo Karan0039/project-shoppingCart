@@ -116,7 +116,7 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (getPhone)
             error.push("mobile number is already in use")
 
-        if (typeof data.password == "string" && /[ ]+/.test(data.password?.trim()))
+        if (typeof data.password == "string" && /[ ]+/.test(data.password))
             error.push("enter valid password")
         //checks password length
         if (data.password?.trim() && (data.password.length < 8 || data.password.length > 15))
