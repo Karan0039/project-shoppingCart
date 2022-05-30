@@ -24,10 +24,7 @@ const createProduct = async function (req, res) {
 
         let uploadedFileURL = await uploadFile(files[0])
         data.productImage = uploadedFileURL
-
-        data.price = parseFloat(parseFloat(data.price).toFixed(2))
-        console.log(data.availableSizes)
-        console.log(data.style)
+        data.price = parseFloat(data.price).toFixed(2)
         let created = await productModel.create(data)
         res.status(201).send({ status: true, message: "User created successfully", data: created })
     }
