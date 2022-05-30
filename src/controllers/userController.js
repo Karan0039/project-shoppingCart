@@ -14,7 +14,7 @@ const registerUser = async function (req, res) {
         let data = req.body
         let files = req.files
 
-        let getEmail = await userModel.findOne({ email: data.email })
+        let getEmail = await userModel.findOne({ email: data.email }).collation({ locale: "en", strength: 2 })
         let getPhone = await userModel.findOne({ phone: data.phone })
         let error = []
         let err1 = isRequired(data, files)
@@ -109,7 +109,7 @@ const updateUserProfile = async function (req, res) {
     let userId = req.params.userId;
     let data = req.body
     let files = req.files
-    let getEmail = await userModel.findOne({ email: data.email?.trim().toLowerCase() })
+    let getEmail = await userModel.findOne({ email: data.email }).collation({ locale: "en", strength: 2 })
     let getPhone = await userModel.findOne({ phone: data.phone })
     if (Object.keys(data).length == 0 && files.length == 0)
         return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })
@@ -128,16 +128,16 @@ const updateUserProfile = async function (req, res) {
     if (data.address) {
         if (data.address.shipping) {
             if (data.address.shipping.city?.trim())
-                data.address.shipping.city = initialCapital(data.address.shipping.city)
+                data.address.shipping.city = initialCapital(data.address.shipping.city.trim())
         }
 
         if (data.address.billing) {
             if (data.address.billing.city?.trim())
-                data.address.billing.city = initialCapital(data.address.billing.city)
+                data.address.billing.city = initialCapital(data.address.billing.city.trim())
         }
     }
     if (data.email?.trim())
-        data.email = data.email.toLowerCase()
+        data.email = data.email.trim().toLowerCase()
     if (files.length > 0) {
         let uploadedFileURL = await uploadFile(files[0])
         data.profileImage = uploadedFileURL
