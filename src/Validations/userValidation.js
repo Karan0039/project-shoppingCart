@@ -110,8 +110,12 @@ function isInvalid(data, getEmail, getPhone, files) {
             error.push("upload a valid image file")
 
         //checks for valid phone number
-        if (typeof data.phone == "string" && !(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(data.phone)))
+        if (typeof data.phone == "string" && !(/^((\+91)?0?)?[6-9]\d{9}$/.test(data.phone.trim())))
             error.push("enter valid mobile number")
+        
+        if (typeof data.phone == "string" && (/^((\+91)?0?)?[6-9]\d{9}$/.test(data.phone.trim())))
+            data.phone=data.phone.trim().slice(-10)
+
         //check unique phone number
         if (getPhone)
             error.push("mobile number is already in use")
@@ -126,7 +130,7 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (isValid(address)) {
 
             if (address.shipping) {
-                if (typeof address.shipping.street == "string" && /[ ]+/.test(address.shipping.street?.trim()))
+                if (typeof address.shipping.street == "string" && /^[ ]+$/.test(address.shipping.street?.trim()))
                     error.push("enter a valid shipping/street")
                 if (typeof address.shipping.city == "string" && !(/^[a-zA-Z]+$/.test(address.shipping.city?.trim())))
                     error.push("enter a valid shipping/city name")
@@ -136,7 +140,7 @@ function isInvalid(data, getEmail, getPhone, files) {
             }
 
             if (address.billing) {
-                if (typeof address.billing.street == "string" && /[ ]+/.test(address.billing.street?.trim()))
+                if (typeof address.billing.street == "string" && /^[ ]+$/.test(address.billing.street?.trim()))
                     error.push("enter a valid billing/street")
                 if (typeof address.billing.city == "string" && !(/^[a-zA-Z]+$/.test(address.billing.city?.trim())))
                     error.push("enter a valid billing/city name")
