@@ -73,16 +73,14 @@ const createCart = async function (req, res) {
         }
         if (!findCart) {
             let createdCart = await cartModel.create(data)
-
             return res.status(201).send({ status: true, msg: "New cart created", data: createdCart })
         }
-        else {
+        else 
             return res.status(200).send({ status: true, msg: "Items added to cart", data: findCart })
-        }
+        
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-
 }
 
 
@@ -172,7 +170,7 @@ const getCart = async function (req, res) {
 const deleteCart = async function (req, res) {
     try {
         let cart = await cartModel.findOneAndUpdate(
-            { _id: req.body.cartId, userId: req.params.userId },
+            { userId: req.params.userId },
             { items: [], totalItems: 0, totalPrice: 0 }
         )
         if (!cart)
