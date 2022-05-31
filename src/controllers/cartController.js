@@ -19,10 +19,10 @@ const createCart = async function (req, res) {
 
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "productId is invalid" });
-
-        if (!isValidObjectId(cartId))
-            return res.status(400).send({ status: false, message: "CART ID is Not Valid" });
-
+        if (cartId) {
+            if (!isValidObjectId(cartId))
+                return res.status(400).send({ status: false, message: "CART ID is Not Valid" });
+        }
         const findUserDetails = await userModel.findOne({ _id: userId })
         if (!findUserDetails)
             return res.status(404).send({ status: false, message: "User not found" });
@@ -35,7 +35,7 @@ const createCart = async function (req, res) {
         if (quantity == 0)
             return res.status(400).send({ message: "Quantity should not be zer0" })
 
-        let findCart = await cartModel.findOne({ _id: cartId, userId }).populate("items.productId")
+        let findCart = await cartModel.findOne({ userId: userId }).populate("items.productId")
         let product = {
             productId: productId,
             quantity: quantity
@@ -50,8 +50,8 @@ const createCart = async function (req, res) {
             }
             if (indexOfProduct == -1)
                 findCart = await cartModel.findOneAndUpdate(
-                    { userId }, 
-                    { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: quantity } }, 
+                    { userId },
+                    { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: quantity } },
                     { new: true }
                 ).populate("items.productId")
 
@@ -110,9 +110,9 @@ const updateCart = async function (req, res) {
         if (!cart)
             return res.status(404).send({ status: false, message: "Cart not found" })
 
-        if(cart.items.length==0)
-            return res.status(400).send({status: false, message: "Cart is empty"})
-            
+        if (cart.items.length == 0)
+            return res.status(400).send({ status: false, message: "Cart is empty" })
+
         let indexOfProduct = -1
         for (let i in cart.items) {
             if (cart.items[i].productId._id == data.productId) {
