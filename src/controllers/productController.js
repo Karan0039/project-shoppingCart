@@ -137,7 +137,7 @@ const updateProduct = async function (req, res) {
         if (data.price)
             data.price = parseFloat(parseFloat(data.price).toFixed(2))
         // if(data.availableSizes)
-        // data.availableSizes={}
+        // data.availableSizes={} whole array is being replaced, need fixing
 
         let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
