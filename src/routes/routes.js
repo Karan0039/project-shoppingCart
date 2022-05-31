@@ -26,4 +26,4 @@ route.get("/users/:userId/cart", userAuthentication, userAuthorization, getCart)
 route.delete("/users/:userId/cart", userAuthentication, userAuthorization, deleteCart)
 
 
-module.exports = route; 
+module.exports = route

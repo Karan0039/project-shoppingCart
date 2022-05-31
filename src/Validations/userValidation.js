@@ -2,7 +2,7 @@
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
     //if (typeof value === 'string' && value.trim().length === 0) return false
-    return true;
+    return true
 }
 
 function isRequired(data, files) {
@@ -78,7 +78,7 @@ function isRequired(data, files) {
 
 
         if (error.length > 0)
-            return error;
+            return error
     }
     catch (err) {
         console.log({ status: false, message: err.message })
@@ -152,7 +152,7 @@ function isInvalid(data, getEmail, getPhone, files) {
         }
 
         if (error.length > 0)
-            return error;
+            return error
     }
     catch (err) {
         console.log({ status: false, message: err })

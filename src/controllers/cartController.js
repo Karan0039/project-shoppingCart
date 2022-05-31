@@ -6,7 +6,7 @@ const { isValidObjectId } = require("mongoose")
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
-    return true;
+    return true
 }
 
 //1
@@ -15,7 +15,7 @@ const createCart = async function (req, res) {
         let userId = req.params.userId
         let { productId, cartId, quantity } = req.body
         if (Object.keys(req.body).length == 0)
-            return res.status(400).send({ status: false, message: "Field cannot be empty. Please enter some details" });
+            return res.status(400).send({ status: false, message: "Field cannot be empty. Please enter some details" })
 
         if (!isValidObjectId(productId))
             return res.status(400).send({ status: false, message: "productId is invalid" })
@@ -36,7 +36,7 @@ const createCart = async function (req, res) {
 
         const findUserDetails = await userModel.findOne({ _id: userId })
         if (!findUserDetails)
-            return res.status(404).send({ status: false, message: "User not found" });
+            return res.status(404).send({ status: false, message: "User not found" })
 
         const findProductDetails = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!findProductDetails)
@@ -67,7 +67,7 @@ const createCart = async function (req, res) {
                 findCart.items[indexOfProduct].quantity += quantity
                 findCart.totalItems = findCart.items.length
                 findCart.totalPrice += price * quantity
-                await findCart.save();
+                await findCart.save()
             }
         }
         let data = {
@@ -143,14 +143,14 @@ const updateCart = async function (req, res) {
                 cart.items = cart.items.filter(function (value, index) { if (index != indexOfProduct) return value })
                 cart.totalItems = cart.items.length
                 cart.totalPrice -= product.price * quantity
-                break;
+                break
             case 1:
                 --cart.items[indexOfProduct].quantity
                 cart.totalItems = cart.items.length
                 cart.totalPrice -= product.price
-                break;
+                break
         }
-        await cart.save();
+        await cart.save()
 
         if (cart.items.length == 0)
             return res.status(400).send({ status: false, message: "Cart is empty" })

@@ -2,13 +2,13 @@
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
     //if (typeof value === 'string' && value.trim().length === 0) return false
-    return true;
+    return true
 }
 
 const isValidNum = (value) => {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'number' && value.trim().length === 0) return false
-    return true;
+    return true
 }
 
 function isRequired(data, files) {
@@ -36,7 +36,7 @@ function isRequired(data, files) {
             error.push("image file is required")
 
         if (error.length > 0)
-            return error;
+            return error
     }
     catch (err) {
         console.log({ status: false, message: err.message })
@@ -58,10 +58,12 @@ function isInvalid(data, files, getTitle) {
             error.push("enter valid price")
 
         //checks for valid currencyId
-        if (typeof data.currencyId == "string" && data.currencyId?.trim().toUpperCase() !== "INR")
-            error.push("only 'INR' as currencyId is supported")
-        else data.currencyId = data.currencyId.trim().toUpperCase()
+        if(data.currencyId){
+            if (typeof data.currencyId == "string" && data.currencyId?.trim().toUpperCase() !== "INR")
+                error.push("only 'INR' as currencyId is supported")
 
+            else data.currencyId = data.currencyId.trim().toUpperCase()
+        }
         //checks for valid currencyFormat
         if (typeof data.currencyFormat == "string" && data.currencyFormat !== "₹")
             error.push("only '₹' as currencyFormat is supported")
@@ -75,8 +77,9 @@ function isInvalid(data, files, getTitle) {
         }
 
         //check for image file
-        if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
-            error.push("upload a valid image file")
+        if(files)
+            if (files.length > 0 && !(/image\/[a-z]+/.test(files[0].mimetype)))
+                error.push("upload a valid image file")
 
         //checks for valid availableSizes
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"]
@@ -90,11 +93,11 @@ function isInvalid(data, files, getTitle) {
                 data.availableSizes = data.availableSizes.join(",")
 
             let arr1 = (data.availableSizes).split(",")
-            data.availableSizes = arr1.map(x => x.toUpperCase());
+            data.availableSizes = arr1.map(x => x.toUpperCase())
             for (let i in data.availableSizes) {
                 if (!arr.includes(data.availableSizes[i])) {
                     error.push("enter valid availableSizes")
-                    break;
+                    break
                 }
             }
         }
@@ -104,7 +107,7 @@ function isInvalid(data, files, getTitle) {
             error.push("enter a valid installments (accpets upto 2 digits only)")
 
         if (error.length > 0)
-            return error;
+            return error
 
     }
     catch (err) {

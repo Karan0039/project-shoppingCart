@@ -21,7 +21,7 @@ const registerUser = async function (req, res) {
         if (err1)
             error.push(...err1)
 
-        let err2 = isInvalid(data, getEmail, getPhone, files);
+        let err2 = isInvalid(data, getEmail, getPhone, files)
         if (err2)
             error.push(...err2)
 
@@ -74,7 +74,7 @@ const userLogin = async function (req, res) {
         if (result == true) {
             const token = jwt.sign({
                 userId: user._id
-            }, "Project 5", { expiresIn: "300m" });
+            }, "Project 5", { expiresIn: "300m" })
             res.status(200).send({ status: true, data: "logged in successfully", data: { token } })
         }
         else if (result == false)
@@ -93,9 +93,9 @@ const getUserDetails = async function (req, res) {
         const userIdfromParams = req.params.userId
         const checkId = await userModel.findOne({ _id: userIdfromParams }).lean()
         if (!checkId)
-            return res.status(404).send({ status: false, message: "User Not Found" });
+            return res.status(404).send({ status: false, message: "User Not Found" })
 
-        return res.status(200).send({ status: true, message: "User details", data: checkId });
+        return res.status(200).send({ status: true, message: "User details", data: checkId })
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -106,7 +106,7 @@ const getUserDetails = async function (req, res) {
 
 //4.
 const updateUserProfile = async function (req, res) {
-    let userId = req.params.userId;
+    let userId = req.params.userId
     let data = req.body
     let files = req.files
     let getEmail = await userModel.findOne({ email: data.email }).collation({ locale: "en", strength: 2 })
@@ -143,13 +143,13 @@ const updateUserProfile = async function (req, res) {
         data.profileImage = uploadedFileURL
     }
 
-    let updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, [{ $addFields: data }], { new: true });
+    let updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, [{ $addFields: data }], { new: true })
 
     if (data.password?.trim()) {
         data.password = await bcrypt.hash(data.password, 10)
         updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, { $set: { password: data.password } }, { new: true })
     }
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedProfile })
-};
+}
 
 module.exports = { registerUser, userLogin, updateUserProfile, getUserDetails }
