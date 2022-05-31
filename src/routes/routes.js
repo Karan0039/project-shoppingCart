@@ -5,6 +5,7 @@ const { createProduct, getProducts, getProductById, updateProduct, deleteProduct
 const { userAuthentication } = require("../middlewares/authentication")
 const { userAuthorization } = require("../middlewares/authorization")
 const { createCart, updateCart, getCart, deleteCart } = require("../controllers/cartController")
+
 //User
 route.post("/register", registerUser)
 route.post("/login", userLogin)
