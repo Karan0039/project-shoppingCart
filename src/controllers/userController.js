@@ -74,7 +74,7 @@ const userLogin = async function (req, res) {
         if (result == true) {
             const token = jwt.sign({
                 userId: user._id
-            }, "Project 5", { expiresIn: "30m" });
+            }, "Project 5", { expiresIn: "300m" });
             res.status(200).send({ status: true, data: "logged in successfully", data: { token } })
         }
         else if (result == false)
