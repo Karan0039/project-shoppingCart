@@ -34,10 +34,6 @@ const createCart = async function (req, res) {
         if (!quantity)
             quantity = 1
 
-        const findUserDetails = await userModel.findOne({ _id: userId })
-        if (!findUserDetails)
-            return res.status(404).send({ status: false, message: "User not found" })
-
         const findProductDetails = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!findProductDetails)
             return res.status(404).send({ status: false, message: "Product not found" })
@@ -59,13 +55,12 @@ const createCart = async function (req, res) {
             if (indexOfProduct == -1)
                 findCart = await cartModel.findOneAndUpdate(
                     { userId },
-                    { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: findCart.items.length } },
+                    { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: 1} },
                     { new: true }
                 )
 
             else {
                 findCart.items[indexOfProduct].quantity += quantity
-                findCart.totalItems = findCart.items.length
                 findCart.totalPrice += price * quantity
                 await findCart.save()
             }
@@ -77,7 +72,7 @@ const createCart = async function (req, res) {
                 quantity: quantity
             }],
             totalPrice: price * quantity,
-            totalItems: quantity
+            totalItems: 1
         }
         if (!findCart) {
             let createdCart = await cartModel.create(data)

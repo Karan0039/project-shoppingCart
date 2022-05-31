@@ -473,7 +473,7 @@ Refer below sample
   }],
   totalPrice: 50.99,
   totalItems: 2,
-  totalQuantity: 3,
+  totalQuantity: 3, 
   cancellable: true,
   status: 'pending'
   createdAt: "2021-09-17T04:25:07.803Z",
