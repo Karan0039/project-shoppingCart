@@ -153,7 +153,7 @@ const updateCart = async function (req, res) {
         await cart.save();
 
         if (cart.items.length == 0)
-            return res.status(400).send({ status: false, message: "Cart is empty" })
+            return res.status(200).send({ status: false, message: "Cart is empty" })
 
         return res.status(200).send({ status: true, message: "Updated cart details", data: cart })
 
