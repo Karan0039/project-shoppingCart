@@ -7,7 +7,7 @@ const { isValidObjectId } = require("mongoose")
 const createProduct = async function (req, res) {
     try {
         let data = req.body
-        
+
         let files = req.files
         let getTitle = await productModel.findOne({ title: data.title })
         let error = []
@@ -26,7 +26,7 @@ const createProduct = async function (req, res) {
         data.productImage = uploadedFileURL
         data.price = parseFloat(data.price).toFixed(2)
         let created = await productModel.create(data)
-        res.status(201).send({ status: true, message: "User created successfully", data: created })
+        res.status(201).send({ status: true, message: "Product created successfully", data: created })
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -136,6 +136,8 @@ const updateProduct = async function (req, res) {
         }
         if (data.price)
             data.price = parseFloat(parseFloat(data.price).toFixed(2))
+        // if(data.availableSizes)
+        // data.availableSizes={}
 
         let updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, [{ $addFields: data }], { new: true })
         if (!updatedProduct)
