@@ -18,12 +18,29 @@ const createOrder = async function (req, res) {
         let cartData = await cartModel.findOne({ userId }, { userId: 1, items: 1, totalPrice: 1, totalItems: 1, _id: 0 })
         if (!cartData)
             return res.status(404).send({ status: false, message: "Cart not found" })
-        if (cartData.items.length == 0)
-            return res.status(400).send({ status: false, message: "Cart is empty" })
+        
+            let error=[]
+            if (cartData.items.length == 0)
+            error.push("Cart is empty" )
+
+            if(typeof data.cancellable=="string")
+            error.push("cancellable can have boolean values only")
+            if(data.cancellable && !(data.cancellable==true|| data.cancellable==false))
+            error.push("cancellable can have boolean values only")
+
+            let arr=["pending","completed","canceled"]
+            if(typeof data.status =="string" && !arr.includes(data.status))
+            error.push("status can only be pending or completed while placing order")
+            else if(data.status && data.status.toLowerCase()=="canceled")
+            error.push("status as canceled is not accepted while placing an order.") 
+
+            if(error.length>0)
+            return res.status(400).send({ status: false, message: error })
 
         totalQuantity = cartData.items.map(x => x.quantity).reduce((a, b) => a + b)
         orderData = { ...cartData.toObject(), totalQuantity, ...data }
 
+        
         let orderCreated = await orderModel.create(orderData)
         await cartModel.findOneAndUpdate(
             { userId: userId },
