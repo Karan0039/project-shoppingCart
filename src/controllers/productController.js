@@ -79,7 +79,7 @@ const getProducts = async (req, res) => {
         if (filterProduct.length == 0) return res.status(404).send({ status: false, message: "Product not found" })
 
         if (filterProduct)
-            return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
+            return res.status(200).send({ status: true, message: "Success", data: filterProduct })
     }
     catch (error) {
         return res.status(500).send({ status: false, error: error.message })

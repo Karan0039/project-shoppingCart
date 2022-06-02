@@ -76,10 +76,10 @@ const createCart = async function (req, res) {
         }
         if (!findCart) {
             let createdCart = await cartModel.create(data)
-            return res.status(201).send({ status: true, msg: "New cart created", data: createdCart })
+            return res.status(201).send({ status: true, message: "Success", data: createdCart })
         }
         else
-            return res.status(200).send({ status: true, msg: "Items added to cart", data: findCart })
+            return res.status(201).send({ status: true, message: "Success", data: findCart })
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
