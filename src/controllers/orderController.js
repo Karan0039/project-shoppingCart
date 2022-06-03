@@ -45,7 +45,7 @@ const createOrder = async function (req, res) {
             { userId: userId },
             { items: [], totalItems: 0, totalPrice: 0 }
         )
-        return res.status(200).send({ status: true, message: "Order placed successfully", data: orderCreated })
+        return res.status(201).send({ status: true, message: "Order placed successfully", data: orderCreated })
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })

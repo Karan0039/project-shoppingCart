@@ -150,7 +150,7 @@ const updateCart = async function (req, res) {
         if (cart.items.length == 0)
             return res.status(200).send({ status: false, message: "Cart is empty", data: cart })
 
-        return res.status(200).send({ status: true, message: "Updated cart details", data: cart })
+        return res.status(200).send({ status: true, message: "Success", data: cart })
 
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
@@ -168,7 +168,7 @@ const getCart = async function (req, res) {
         if (cart.items.length == 0)
             return res.status(200).send({ status: true, message: "Your cart is empty", data: cart })
 
-        return res.status(200).send({ status: true, message: "Cart details", data: cart })
+        return res.status(200).send({ status: true, message: "Success", data: cart })
 
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })

@@ -127,12 +127,17 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (data.password?.trim() && (data.password.length < 8 || data.password.length > 15))
             error.push("password must have 8-15 characters")
 
-        let address = data.address
         if (isValid(address)) {
+
+            if (typeof data.address == "string")
+                data.address = JSON.parse(data.address)
+
+            let address = data.address
 
             if (address.shipping) {
                 if (typeof address.shipping.street == "string" && /^[\s]+$/.test(address.shipping.street?.trim()))
                     error.push("enter a valid shipping/street")
+
                 if (typeof address.shipping.city == "string" && !(/^[a-zA-Z]+$/.test(address.shipping.city?.trim())))
                     error.push("enter a valid shipping/city name")
 
@@ -143,6 +148,7 @@ function isInvalid(data, getEmail, getPhone, files) {
             if (address.billing) {
                 if (typeof address.billing.street == "string" && /^[\s]+$/.test(address.billing.street?.trim()))
                     error.push("enter a valid billing/street")
+                    
                 if (typeof address.billing.city == "string" && !(/^[a-zA-Z]+$/.test(address.billing.city?.trim())))
                     error.push("enter a valid billing/city name")
 
