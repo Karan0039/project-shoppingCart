@@ -1,7 +1,7 @@
 //check Validity
 const isValid = (value) => {
     if (typeof value === 'undefined' || value === null) return false
-    //if (typeof value === 'string' && value.trim().length === 0) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
     return true
 }
 
@@ -38,43 +38,45 @@ function isRequired(data, files) {
 
 
         //street is present 
-        if (isValid(data.address)) {
+        if (data.address) {
 
-            if (typeof data.address == "string")
-                data.address = JSON.parse(data.address)
+            if (typeof data.address == "string" && data.address.trim().length != 0) {
+                try { address = JSON.parse(data.address) }
+                catch (err) { }
+                if (typeof address == 'object') {
+                    if (isValid(address.shipping)) {
+                        if (!isValid(address.shipping.street))
+                            error.push("shipping/street is required")
 
-            let address = data.address
+                        //city is present 
+                        if (!isValid(address.shipping.city))
+                            error.push("shipping/city is required")
 
-            if (isValid(address.shipping)) {
-                if (!isValid(address.shipping.street))
-                    error.push("shipping/street is required")
+                        //pincode is present 
+                        if (!isValid(address.shipping.pincode))
+                            error.push("shipping/pincode is required")
+                    }
+                    else error.push("shipping address is required")
 
-                //city is present 
-                if (!isValid(address.shipping.city))
-                    error.push("shipping/city is required")
+                    if (isValid(address.billing)) {
+                        //street is present 
+                        if (!isValid(address.billing.street))
+                            error.push("billing/street is required")
 
-                //pincode is present 
-                if (!isValid(address.shipping.pincode))
-                    error.push("shipping/pincode is required")
+                        //city is present 
+                        if (!isValid(address.billing.city))
+                            error.push("billing/city is required")
+
+                        //pincode is present 
+                        if (!isValid(address.billing.pincode))
+                            error.push("billing/pincode is required")
+                    }
+                    else error.push("billing address is required")
+                }
+                // else error.push("address is required")
             }
-            else error.push("shipping address is required")
-
-            if (isValid(address.billing)) {
-                //street is present 
-                if (!isValid(address.billing.street))
-                    error.push("billing/street is required")
-
-                //city is present 
-                if (!isValid(address.billing.city))
-                    error.push("billing/city is required")
-
-                //pincode is present 
-                if (!isValid(address.billing.pincode))
-                    error.push("billing/pincode is required")
-            }
-            else error.push("billing address is required")
         }
-        else error.push("address is required")
+        else if (data.address == undefined) error.push("address is required")
 
 
         if (error.length > 0)
@@ -120,41 +122,52 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (getPhone)
             error.push("mobile number is already in use")
 
-        if (typeof data.password == "string" && (/[ ]+/.test(data.password))||/^$/.test(data.password))
+        if (typeof data.password == "string" && (/[ ]+/.test(data.password)) || /^$/.test(data.password))
             error.push("enter valid password")
         //checks password length
-        
+
         if (data.password?.trim() && (data.password.length < 8 || data.password.length > 15))
             error.push("password must have 8-15 characters")
 
-        if (isValid(data.address)) {
+        if (typeof data.address == 'string' && data.address.length == 0) 
+            error.push('enter valid address')
 
-            if (typeof data.address == "string")
-                data.address = JSON.parse(data.address)
+        if (data.address) {
 
-            let address = data.address
+            if (typeof data.address == "string" && data.address.trim().length != 0) {
 
-            if (address.shipping) {
-                if (typeof address.shipping.street == "string" && /^[\s]+$/.test(address.shipping.street?.trim()))
-                    error.push("enter a valid shipping/street")
+                try { data.address = JSON.parse(data.address) }
+                catch (err) { }
 
-                if (typeof address.shipping.city == "string" && !(/^[a-zA-Z]+$/.test(address.shipping.city?.trim())))
-                    error.push("enter a valid shipping/city name")
+                if (typeof data.address == 'object') {
+                    let address = data.address
 
-                if (typeof address.shipping.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.shipping.pincode?.trim())))
-                    error.push("enter a valid shipping/pincode")
+                    if (address.shipping) {
+
+                        if (typeof address.shipping.street == "string" && /^$/.test(address.shipping.street?.trim()))
+                            error.push("enter a valid shipping/street")
+
+                        if (typeof address.shipping.city == "string" && !(/^[a-zA-Z]+$/.test(address.shipping.city?.trim())))
+                            error.push("enter a valid shipping/city name")
+
+                        if (typeof address.shipping.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.shipping.pincode?.trim())))
+                            error.push("enter a valid shipping/pincode")
+                    }
+
+                    if (address.billing) {
+                        if (typeof address.billing.street == "string" && /^$/.test(address.billing.street?.trim()))
+                            error.push("enter a valid billing/street")
+
+                        if (typeof address.billing.city == "string" && !(/^[a-zA-Z]+$/.test(address.billing.city?.trim())))
+                            error.push("enter a valid billing/city name")
+
+                        if (typeof address.billing.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.billing.pincode?.trim())))
+                            error.push("enter a valid billing/pincode")
+                    }
+                }
+                else error.push('enter valid address')
             }
-
-            if (address.billing) {
-                if (typeof address.billing.street == "string" && /^[\s]+$/.test(address.billing.street?.trim()))
-                    error.push("enter a valid billing/street")
-                    
-                if (typeof address.billing.city == "string" && !(/^[a-zA-Z]+$/.test(address.billing.city?.trim())))
-                    error.push("enter a valid billing/city name")
-
-                if (typeof address.billing.pincode == "string" && !(/^[1-9][0-9]{5}$/.test(address.billing.pincode?.trim())))
-                    error.push("enter a valid billing/pincode")
-            }
+            else error.push('enter valid address')
         }
 
         if (error.length > 0)

@@ -12,9 +12,9 @@ let decodeToken = function (token) {
 
 const userAuthentication = function (req, res, next) {
     try {
-        let token = req.headers['x-api-key']
+        let token = req.headers.authorization
         if (!token) return res.status(400).send({ status: false, message: "Token must be present" })
-
+        token = token.split(' ')[1]
         let verifyToken = decodeToken(token)
         if (!verifyToken)
             return res.status(401).send({

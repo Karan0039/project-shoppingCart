@@ -63,6 +63,8 @@ const userLogin = async function (req, res) {
             error.push("Please Enter Email")
         if (!isValid(password))
             error.push("Please Provide Password")
+        if (typeof data.email == "string" && !(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(data.email?.trim())))
+            error.push("enter a valid email")
         if (error.length > 0)
             return res.status(400).send({ status: false, msg: error })
 
@@ -111,7 +113,7 @@ const updateUserProfile = async function (req, res) {
     let files = req.files
     let getEmail = await userModel.findOne({ email: data.email }).collation({ locale: "en", strength: 2 })
     let getPhone = await userModel.findOne({ phone: data.phone })
-    if (Object.keys(data).length == 0 && files.length == 0)
+    if (Object.keys(data).length == 0)
         return res.status(400).send({ status: false, message: "Please provide user detail(s) to be updated." })
 
     let err = isInvalid(data, getEmail, getPhone, files)
