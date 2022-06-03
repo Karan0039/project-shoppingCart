@@ -127,7 +127,7 @@ function isInvalid(data, getEmail, getPhone, files) {
         if (data.password?.trim() && (data.password.length < 8 || data.password.length > 15))
             error.push("password must have 8-15 characters")
 
-        if (isValid(address)) {
+        if (isValid(data.address)) {
 
             if (typeof data.address == "string")
                 data.address = JSON.parse(data.address)
