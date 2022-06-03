@@ -37,7 +37,7 @@ const createOrder = async function (req, res) {
         if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 
-        totalQuantity = cartData.items.reduce((a, b) => a.quantity + b.quantity)
+        totalQuantity = cartData.items.map(x=>x.quantity).reduce((a, b) => a + b)
         orderData = { ...cartData.toObject(), totalQuantity, ...data }
 
         let orderCreated = await orderModel.create(orderData)
