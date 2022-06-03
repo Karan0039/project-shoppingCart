@@ -9,10 +9,10 @@ const createOrder = async function (req, res) {
         let userId = req.params.userId
 
         if (!isValidObjectId(data.cartId))
-        return res.status(400).send({ status: false, message: "cartId is invalid" })
+            return res.status(400).send({ status: false, message: "cartId is invalid" })
 
         let cart = await cartModel.findById(data.cartId)
-        if (!cart || cart.userId!=userId)
+        if (!cart || cart.userId != userId)
             return res.status(404).send({ status: false, message: "CartId does not belong to the User" })
 
         let cartData = await cartModel.findOne({ userId }, { userId: 1, items: 1, totalPrice: 1, totalItems: 1, _id: 0 })
@@ -37,7 +37,7 @@ const createOrder = async function (req, res) {
         if (error.length > 0)
             return res.status(400).send({ status: false, message: error })
 
-        totalQuantity = cartData.items.map(x => x.quantity).reduce((a, b) => a + b)
+        totalQuantity = cartData.items.reduce((a, b) => a.quantity + b.quantity)
         orderData = { ...cartData.toObject(), totalQuantity, ...data }
 
         let orderCreated = await orderModel.create(orderData)
@@ -63,7 +63,7 @@ const updateOrder = async function (req, res) {
 
         if (!isValidObjectId(data.orderId))
             error.push("orderId is invalid")
-        
+
         let arr = ["pending", "completed", "canceled"]
         if (typeof data.status == "string" && !arr.includes(data.status))
             error.push("status can only be completed or cancelled while updating order")
